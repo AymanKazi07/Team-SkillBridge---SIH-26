@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,29 +25,63 @@
         }
     </script>
     <!-- Google Fonts & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .font-brand { font-family: 'Cinzel', serif; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .font-brand {
+            font-family: 'Cinzel', serif;
+        }
+
         .hero-pattern {
             background-color: #05192d;
             background-image: radial-gradient(rgba(247, 127, 0, 0.12) 1px, transparent 0), radial-gradient(rgba(0, 127, 95, 0.12) 1px, #05192d 0);
             background-size: 30px 30px;
             background-position: 0 0, 15px 15px;
         }
-        .card-hover { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 15px 30px -5px rgba(0,0,0,0.12); }
-        .badge-tricolor { background: linear-gradient(90deg, #f77f00 0%, #ffffff 50%, #007f5f 100%); }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 15px rgba(13, 59, 102, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(0, 127, 95, 0.6); }
+
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .pulse-active { animation: pulse-glow 3s infinite; }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.12);
+        }
+
+        .badge-tricolor {
+            background: linear-gradient(90deg, #f77f00 0%, #ffffff 50%, #007f5f 100%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(13, 59, 102, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 25px rgba(0, 127, 95, 0.6);
+            }
+        }
+
+        .pulse-active {
+            animation: pulse-glow 3s infinite;
+        }
     </style>
 </head>
+
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
     <div id="app"></div>
@@ -60,7 +95,7 @@
             placements: JSON.parse(localStorage.getItem('sb_placements') || '[]'),
             currentUser: JSON.parse(localStorage.getItem('sb_currentUser') || 'null'),
 
-            save: function() {
+            save: function () {
                 localStorage.setItem('sb_users', JSON.stringify(this.users));
                 localStorage.setItem('sb_courses', JSON.stringify(this.courses));
                 localStorage.setItem('sb_internships', JSON.stringify(this.internships));
@@ -68,7 +103,7 @@
                 localStorage.setItem('sb_currentUser', JSON.stringify(this.currentUser));
             },
 
-            seed: function() {
+            seed: function () {
                 if (this.users.length === 0) {
                     this.users = [
                         {
@@ -232,7 +267,7 @@
                 ]
             },
 
-            evaluateSubmission: function(payload) {
+            evaluateSubmission: function (payload) {
                 const { domain, skills, projects, research, github } = payload;
                 let score = 40;
                 let repoRemarks = "No GitHub repository provided. Add a repository to earn code quality credits.";
@@ -240,7 +275,7 @@
 
                 if (skills.length > 0) score += Math.min(skills.length * 7, 25);
                 if (projects.length > 0) score += Math.min(projects.length * 10, 20);
-                
+
                 if (github && github.includes('github.com')) {
                     score += 8;
                     repoRemarks = "Verified Git Repo: Clean modular layout, active commit history, unit tests detected.";
@@ -282,7 +317,7 @@
                 };
             },
 
-            generateRoadmap: function(domain, level) {
+            generateRoadmap: function (domain, level) {
                 if (domain === 'ayush') {
                     return [
                         { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
@@ -302,12 +337,12 @@
         const App = {
             currentTab: 'overview',
 
-            init: function() {
+            init: function () {
                 DB.seed();
                 this.render();
             },
 
-            render: function() {
+            render: function () {
                 const app = document.getElementById('app');
                 if (DB.currentUser) {
                     this.renderDashboard(app);
@@ -317,7 +352,7 @@
             },
 
             // Logo Generator for consistent branding
-            getLogoHtml: function(size = 'normal') {
+            getLogoHtml: function (size = 'normal') {
                 const iconSize = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
                 const textClass = size === 'large' ? 'text-3xl' : 'text-2xl';
                 return `
@@ -341,7 +376,7 @@
             },
 
             // Top Official Gov Strip
-            renderGovBanner: function() {
+            renderGovBanner: function () {
                 return `
                     <div class="bg-slate-900 text-slate-300 text-xs border-b border-slate-800 py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center">
                         <div class="flex items-center space-x-3">
@@ -361,7 +396,7 @@
             },
 
             // Landing Page
-            renderLanding: function(app) {
+            renderLanding: function (app) {
                 app.innerHTML = `
                     <div>
                         ${this.renderGovBanner()}
@@ -456,7 +491,7 @@
             },
 
             // Login / Register Modal Views
-            showLogin: function(role) {
+            showLogin: function (role) {
                 const app = document.getElementById('app');
                 const roleConfig = {
                     student: { title: 'Student & Researcher Login', icon: 'fa-user-graduate', color: 'blue', demo: 'student@demo.com' },
@@ -504,7 +539,7 @@
                 `;
             },
 
-            showRegister: function(role) {
+            showRegister: function (role) {
                 const app = document.getElementById('app');
                 let extraFields = '';
 
@@ -564,7 +599,7 @@
                 `;
             },
 
-            handleLogin: function(e, role) {
+            handleLogin: function (e, role) {
                 e.preventDefault();
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value;
@@ -580,7 +615,7 @@
                 }
             },
 
-            handleRegister: function(e, role) {
+            handleRegister: function (e, role) {
                 e.preventDefault();
                 const name = document.getElementById('regName').value.trim();
                 const email = document.getElementById('regEmail').value.trim();
@@ -614,7 +649,7 @@
                 this.render();
             },
 
-            logout: function() {
+            logout: function () {
                 DB.currentUser = null;
                 DB.save();
                 this.showToast('Logged out successfully.', 'info');
@@ -622,7 +657,7 @@
             },
 
             // ==================== DASHBOARD HANDLERS ====================
-            renderDashboard: function(app) {
+            renderDashboard: function (app) {
                 const user = DB.currentUser;
                 let dashboardHtml = '';
 
@@ -662,7 +697,7 @@
             },
 
             // ==================== STUDENT PORTAL & AI ASSESSMENT ====================
-            renderStudentView: function(user) {
+            renderStudentView: function (user) {
                 if (!user.domain || !user.assessment) {
                     return this.renderStudentOnboardingForm(user);
                 }
@@ -862,7 +897,7 @@
             },
 
             // Student Onboarding / Domain Selection Form
-            renderStudentOnboardingForm: function(user) {
+            renderStudentOnboardingForm: function (user) {
                 return `
                     <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
                         <div class="text-center mb-6">
@@ -934,7 +969,7 @@
                 `;
             },
 
-            handleDomainChange: function(domain) {
+            handleDomainChange: function (domain) {
                 const questionText = document.getElementById('dynamicQuestionText');
                 if (!questionText) return;
                 const questions = AIEngine.questionBank[domain] || AIEngine.questionBank.engineering;
@@ -942,7 +977,7 @@
                 questionText.innerHTML = `<strong>Focus [${q.focus}]:</strong> ${q.q}`;
             },
 
-            showRetakeAssessment: function() {
+            showRetakeAssessment: function () {
                 const app = document.getElementById('app');
                 const user = DB.currentUser;
                 user.domain = '';
@@ -950,7 +985,7 @@
                 this.renderDashboard(app);
             },
 
-            saveStudentProfile: function(e) {
+            saveStudentProfile: function (e) {
                 e.preventDefault();
                 const user = DB.currentUser;
                 const domain = document.getElementById('formDomain').value;
@@ -986,7 +1021,7 @@
                 this.render();
             },
 
-            startCourseQuiz: function(courseId) {
+            startCourseQuiz: function (courseId) {
                 const course = DB.courses.find(c => c.id === courseId);
                 if (!course || !course.quiz || course.quiz.length === 0) {
                     this.showToast('No active quiz questions for this course yet.', 'info');
@@ -1036,7 +1071,7 @@
                 `;
             },
 
-            handleQuizSubmit: function(e, courseId) {
+            handleQuizSubmit: function (e, courseId) {
                 e.preventDefault();
                 const course = DB.courses.find(c => c.id === courseId);
                 const user = DB.currentUser;
@@ -1048,7 +1083,7 @@
             },
 
             // ==================== ACADEMICIAN PORTAL ====================
-            renderAcademicianView: function(user) {
+            renderAcademicianView: function (user) {
                 const myCourses = DB.courses.filter(c => c.author.includes(user.name) || user.role === 'academician');
 
                 return `
@@ -1114,7 +1149,7 @@
                 `;
             },
 
-            showCourseModal: function() {
+            showCourseModal: function () {
                 const app = document.getElementById('app');
                 app.innerHTML = `
                     <div class="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
@@ -1169,7 +1204,7 @@
                 `;
             },
 
-            saveCourse: function(e) {
+            saveCourse: function (e) {
                 e.preventDefault();
                 const user = DB.currentUser;
                 const title = document.getElementById('newCourseTitle').value;
@@ -1209,7 +1244,7 @@
                 this.render();
             },
 
-            deleteCourse: function(id) {
+            deleteCourse: function (id) {
                 DB.courses = DB.courses.filter(c => c.id !== id);
                 DB.save();
                 this.showToast('Course removed.', 'info');
@@ -1217,7 +1252,7 @@
             },
 
             // ==================== INDUSTRIALIST PORTAL ====================
-            renderIndustrialistView: function(user) {
+            renderIndustrialistView: function (user) {
                 return `
                     <div class="space-y-6">
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-wrap justify-between items-center gap-4">
@@ -1279,7 +1314,7 @@
                 `;
             },
 
-            showPostOpportunityModal: function(type) {
+            showPostOpportunityModal: function (type) {
                 const app = document.getElementById('app');
                 app.innerHTML = `
                     <div class="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
@@ -1325,7 +1360,7 @@
                 `;
             },
 
-            saveOpportunity: function(e, type) {
+            saveOpportunity: function (e, type) {
                 e.preventDefault();
                 const user = DB.currentUser;
                 const title = document.getElementById('oppTitle').value;
@@ -1363,11 +1398,11 @@
                 this.render();
             },
 
-            applyOpportunity: function(type, title) {
+            applyOpportunity: function (type, title) {
                 this.showToast(`Application with APAAR ID portfolio submitted for "${title}"!`, 'success');
             },
 
-            showToast: function(message, type = 'info') {
+            showToast: function (message, type = 'info') {
                 const colorMap = {
                     success: 'bg-emerald-700 text-white border-emerald-800',
                     error: 'bg-rose-700 text-white border-rose-800',
@@ -1388,4 +1423,5 @@
         document.addEventListener('DOMContentLoaded', () => App.init());
     </script>
 </body>
+
 </html>
