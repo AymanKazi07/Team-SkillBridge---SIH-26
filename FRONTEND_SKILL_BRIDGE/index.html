@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge - AI-Powered Academia-Industry & AYUSH NEP-2020 Ecosystem</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gov: {
+                            blue: '#1e40af',
+                            navy: '#0f172a',
+                            saffron: '#d97706',
+                            green: '#047857',
+                            ayush: '#115e59'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Institutional Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Global Persistent Background Engine Container -->
+    <div id="global-background">
+        <div class="milky-hero-pattern" id="grid-layer"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+        <canvas id="bg-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+    </div>
+
+    <!-- Main Dynamic Application Container -->
+    <div id="app-content" class="min-h-screen flex flex-col justify-between">
+        <div id="app"></div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- External JavaScript Data & Logic -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
