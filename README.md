@@ -1,7 +1,7 @@
 # 🚀 SkillBridge - AI-Powered Academia-Industry & AYUSH NEP-2020 Ecosystem
 
-> 🏆 **SIH'26 INTERNAL ROUND QUALIFIED AT PICT** 🏆  
-> 🌟 **Out of 221 competing teams, we proudly emerged as one of the Top 45 teams to qualify!** 🌟
+  **SIH'26 INTERNAL ROUND QUALIFIED AT PICT** 
+  **Out of 221 competing teams, we proudly emerged as one of the Top 45 teams to qualify!** 
 
 SkillBridge is a national academia-industry portal designed to align with the National Education Policy (NEP) 2020 and the Ministry of AYUSH. It serves as a unified gateway to connect students, academicians, and industry leaders by bridging skill gaps through AI-powered assessments and verified academic credit tracking. 
 
@@ -46,9 +46,7 @@ Once all four files are downloaded, simply double-click or open the `index.html`
 
 ### 2. 🗄️ Install Backend Dependencies
 Ensure Python 3.8+ is installed on your system, then run:
-
-```bash
-pip install -r requirements.txt'''
+pip install -r requirements.txt
 
 
 
