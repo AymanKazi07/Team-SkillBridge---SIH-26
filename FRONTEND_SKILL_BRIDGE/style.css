@@ -1,0 +1,91 @@
+body { 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+    background-color: #fdfbf7;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+.font-brand { font-family: 'Cinzel', serif; }
+
+/* Fixed Global Background Layer (Under All Views) */
+#global-background {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background-color: #fcfbf9;
+}
+
+#app-content {
+    position: relative;
+    z-index: 10;
+}
+
+/* Technical Moving Grid */
+.milky-hero-pattern {
+    position: absolute;
+    inset: -40px;
+    background-image: 
+        linear-gradient(to right, rgba(30, 64, 175, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 64, 175, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: moveGrid 30s linear infinite;
+    will-change: transform;
+}
+
+@keyframes moveGrid {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(40px, 40px, 0); }
+}
+
+/* Atmospheric Light Orbs */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.35;
+    animation: floatOrb 22s ease-in-out infinite alternate;
+    will-change: transform;
+}
+
+.orb-1 { width: 500px; height: 500px; background: #dbeafe; top: -100px; left: -100px; }
+.orb-2 { width: 550px; height: 550px; background: #fef3c7; bottom: -150px; right: -100px; animation-delay: -7s; }
+.orb-3 { width: 450px; height: 450px; background: #d1fae5; top: 35%; left: 40%; animation-delay: -14s; }
+.orb-4 { width: 380px; height: 380px; background: #e0e7ff; bottom: 10%; left: 5%; animation-delay: -4s; }
+
+@keyframes floatOrb {
+    0% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(40px, -50px, 0) scale(1.08); }
+    100% { transform: translate3d(-30px, 40px, 0) scale(0.95); }
+}
+
+/* Glassmorphism Overrides */
+.glass-card {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+}
+
+.card-hover { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 15px 30px -5px rgba(0,0,0,0.06); }
+.badge-tricolor { background: linear-gradient(90deg, #f77f00 0%, #cbd5e1 50%, #007f5f 100%); }
+
+@media (prefers-reduced-motion: reduce) {
+    .milky-hero-pattern, .orb { animation: none !important; }
+    #bg-canvas { display: none !important; }
+}
+
+/* --- ADDITIONS FOR SIH UPGRADES --- */
+.blur-text {
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+    transition: filter 0.3s ease;
+}
+
+/* Toggle Switch Styling */
+.dot {
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
