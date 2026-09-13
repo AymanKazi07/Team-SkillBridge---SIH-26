@@ -50,23 +50,23 @@ pip install -r requirements.txt
 
 
 
-  ** 👥 Meet the Team ** 
-**This project was developed as a Skill Bridge initiative by the following team:**
-**______________________________________________________________________________**
+  #** 👥 Meet the Team ** 
+#**This project was developed as a Skill Bridge initiative by the following team:**
+#**______________________________________________________________________________**
 
-**Pune Institute of Computer Technology SY STUDENTS**
+#**Pune Institute of Computer Technology SY STUDENTS**
 
-**________________________________**
-**| Ayman Kazi     | Team Leader |**
-**________________________________**
+#**________________________________**
+#**| Ayman Kazi     | Team Leader |**
+#**________________________________**
 
-**| Anushka Dhane  |Team Member  |**
+#**| Anushka Dhane  |Team Member  |**
 
-**| Rudra Kharche  |Team Member  |**
+#**| Rudra Kharche  |Team Member  |**
 
-**| Darshan Rajale |Team Member  |**
+#**| Darshan Rajale |Team Member  |**
 
-**| Aditya Pandya  |Team Member  |**
+#**| Aditya Pandya  |Team Member  |**
 
-**| Aryan Jaiswal  |Team Member  |**
-**________________________________**
+#**| Aryan Jaiswal  |Team Member  |**
+#**________________________________**
