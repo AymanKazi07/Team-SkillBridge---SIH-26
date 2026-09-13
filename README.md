@@ -50,16 +50,18 @@ pip install -r requirements.txt
 
 
 
-** 👥 Meet the Team ** 
+## 👥 Meet the Team
+
 **This project was developed as a Skill Bridge initiative by the following team:**
 **Pune Institute of Computer Technology SY STUDENTS**
 
-**________________________________**
-**| Ayman Kazi     | Team Leader |**
-**________________________________**
-
-**| Anushka Dhane  |Team Member  |**
-**| Rudra Kharche  |Team Member  |**
-**| Darshan Rajale |Team Member  |**
-**| Aditya Pandya  |Team Member  |**
-**| Aryan Jaiswal  |Team Member  |**
+```text
+__________________________________
+| Ayman Kazi     | Team Leader   |
+__________________________________
+| Anushka Dhane  | Team Member   |
+| Rudra Kharche  | Team Member   |
+| Darshan Rajale | Team Member   |
+| Aditya Pandya  | Team Member   |
+| Aryan Jaiswal  | Team Member   |
+__________________________________
