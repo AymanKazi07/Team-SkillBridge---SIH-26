@@ -48,7 +48,7 @@ Once all four files are downloaded, simply double-click or open the `index.html`
 Ensure Python 3.8+ is installed on your system, then run:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt'''
 
 
 
