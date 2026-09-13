@@ -12,35 +12,35 @@ The platform automates skill profiling across specialized domains including Tech
 ## 🎯 Key Features
 
 ### 🎓 For Students & Researchers
-* 🧠 **AI-Powered Skill Assessment:** Evaluates user competence based on uploaded skills, projects, GitHub repository telemetry, and research publications.
-* 🆔 **APAAR ID Integration:** Verifies student profiles and synchronizes earned NEP 2020 credits directly to their Academic Bank of Credits (ABC).
-* 🗺️ **Personalized Career Roadmaps:** Generates step-by-step upskilling workflows mapped to National Higher Education Qualifications Framework (NHEQF) standards.
-* 💼 **Opportunities Access:** Allows students to apply directly for skill-matched internships and verified placements using their APAAR portfolio.
+🧠 **AI-Powered Skill Assessment:** Evaluates user competence based on uploaded skills, projects, GitHub repository telemetry, and research publications.  
+🆔 **APAAR ID Integration:** Verifies student profiles and synchronizes earned NEP 2020 credits directly to their Academic Bank of Credits (ABC).  
+🗺️ **Personalized Career Roadmaps:** Generates step-by-step upskilling workflows mapped to National Higher Education Qualifications Framework (NHEQF) standards.  
+💼 **Opportunities Access:** Allows students to apply directly for skill-matched internships and verified placements using their APAAR portfolio.  
 
 ### 👨‍🏫 For Academicians & Faculty
-* 📚 **Course Publishing:** Enables faculty to create and publish deadline-based accredited courses.
-* ⏱️ **Timed Assessments:** Supports the creation of interactive, timed quizzes that grant NEP credits upon successful completion.
-* 🔬 **Research Collaboration:** Facilitates participation in Faculty Development Programs (FDPs) and industry-sponsored clinical research.
+📚 **Course Publishing:** Enables faculty to create and publish deadline-based accredited courses.  
+⏱️ **Timed Assessments:** Supports the creation of interactive, timed quizzes that grant NEP credits upon successful completion.  
+🔬 **Research Collaboration:** Facilitates participation in Faculty Development Programs (FDPs) and industry-sponsored clinical research.  
 
 ### 🏢 For Industry & R&D Labs
-* 🎯 **Targeted Recruitment:** Allows industries to post domain-specific internships and placements mapped to required skills.
-* ✅ **Verified Talent Pools:** Provides access to auto-shortlisted candidates backed by AI competency scores and verified APAAR academic records.
+🎯 **Targeted Recruitment:** Allows industries to post domain-specific internships and placements mapped to required skills.  
+✅ **Verified Talent Pools:** Provides access to auto-shortlisted candidates backed by AI competency scores and verified APAAR academic records.  
 
 ## 💻 Tech Stack
 
-* **Frontend Integration:** HTML5, JavaScript, and Tailwind CSS for a responsive, dark-mode-enabled UI.
-* **Backend Framework:** FastAPI (Python) for handling assessment endpoints and business logic.
-* **Data Validation:** Pydantic for strict data typing and request modeling.
-* **Server & Deployment:** Uvicorn as the ASGI web server and Mangum for AWS Lambda compatibility.
+🌐 **Frontend Integration:** HTML5, CSS3, and vanilla JavaScript for a responsive, interactive UI (No external CSS frameworks used).  
+⚙️ **Backend Framework:** FastAPI (Python) for handling assessment endpoints and business logic.  
+🛡️ **Data Validation:** Pydantic for strict data typing and request modeling.  
+🚀 **Server & Deployment:** Uvicorn as the ASGI web server and Mangum for AWS Lambda compatibility.  
 
 ## ⚙️ Installation & Setup
 
 ### 1. 🖥️ Launch the Frontend
 To run the application locally, you must download all four essential frontend files and keep them in the same directory:
-* 📄 `index.html`
-* 🎨 `style.css`
-* ⚙️ `script.js`
-* 📊 `data.js`
+📄 `index.html`  
+🎨 `style.css`  
+⚙️ `script.js`  
+📊 `data.js`  
 
 Once all four files are downloaded, simply double-click or open the `index.html` file in any modern web browser to access the application interface!
 
