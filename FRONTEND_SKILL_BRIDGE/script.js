@@ -6,7 +6,7 @@ const GlobalBackgroundEngine = {
     mouse: { x: -1000, y: -1000, targetX: -1000, targetY: -1000 },
     maxNodes: window.innerWidth < 768 ? 14 : 28,
 
-    init: function() {
+    init: function () {
         this.canvas = document.getElementById('bg-canvas');
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
@@ -44,13 +44,13 @@ const GlobalBackgroundEngine = {
         }
     },
 
-    resize: function() {
+    resize: function () {
         if (!this.canvas) return;
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
     },
 
-    animate: function() {
+    animate: function () {
         const self = GlobalBackgroundEngine;
         self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
 
@@ -110,9 +110,10 @@ const DB = {
     selectedJob: null,
     isBlindHiring: false,
     aiSearchQuery: '',
-    institutionalAlerts: [], // To store feedback loop alerts for Academicians
+    institutionalAlerts: [],
+    isPostgresConnected: false,
 
-    seed: function() {
+    seed: function () {
         if (this.users.length === 0) {
             this.users = [
                 {
@@ -133,7 +134,7 @@ const DB = {
                     github: 'https://github.com/aaditya-ayush-research',
                     level: 'Advanced',
                     abcCredits: 28,
-                    rejections: [], // Track industry rejections dynamically
+                    rejections: [],
                     assessment: {
                         score: 88,
                         level: 'Advanced (NHEQF Level 7)',
@@ -284,20 +285,20 @@ const AIEngine = {
         ]
     },
 
-    evaluateSubmission: function(payload) {
+    evaluateSubmission: function (payload) {
         const { domain, skills, projects, research, github, targetRole } = payload;
         let score = 40;
         let repoRemarks = domain === 'engineering'
-            ? (github && github.includes('github.com') 
-                ? "Verified Git Repo: Clean modular layout, active commit history, unit tests detected." 
+            ? (github && github.includes('github.com')
+                ? "Verified Git Repo: Clean modular layout, active commit history, unit tests detected."
                 : "No GitHub repository provided. Add a repository to earn code quality credits.")
             : "Domain Evaluation Completed: Academic portfolio & empirical publications verified.";
-        
+
         let researchWeight = "Baseline Academic Background";
 
         if (skills.length > 0) score += Math.min(skills.length * 7, 25);
         if (projects.length > 0) score += Math.min(projects.length * 10, 20);
-        
+
         if (domain === 'engineering' && github && github.includes('github.com')) {
             score += 8;
         } else if (domain !== 'engineering') {
@@ -345,7 +346,7 @@ const AIEngine = {
         };
     },
 
-    generateRoadmap: function(domain, level) {
+    generateRoadmap: function (domain, level) {
         if (domain === 'ayush') {
             return [
                 { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
@@ -362,15 +363,68 @@ const AIEngine = {
 };
 
 const App = {
-    init: function() {
+    init: function () {
         DB.seed();
         DB.currentUser = null;
         DB.activeStudentTab = 'overview';
         GlobalBackgroundEngine.init();
+        this.fetchCandidates();
         this.render();
     },
 
-    render: function() {
+    // ==================== LIVE POSTGRESQL API INTEGRATION ====================
+    fetchCandidates: async function () {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/candidates');
+            if (response.ok) {
+                const candidates = await response.json();
+                console.log("✅ Fetched candidates from PostgreSQL:", candidates);
+                DB.isPostgresConnected = true;
+
+                // Sync each candidate from PostgreSQL into the DB.users candidate pool
+                candidates.forEach(c => {
+                    const existing = DB.users.find(u => u.name.toLowerCase() === c.name.toLowerCase());
+                    if (!existing) {
+                        DB.users.push({
+                            id: DB.users.length + 1,
+                            name: c.name,
+                            email: `${c.name.toLowerCase().replace(/\s+/g, '')}@student.gov.in`,
+                            password: 'demo',
+                            role: 'student',
+                            apaarId: `8942-7712-${1000 + c.id}`,
+                            apaarVerified: true,
+                            domain: c.ayush_enrolled ? 'ayush' : 'engineering',
+                            subDomain: c.department,
+                            targetRole: c.department,
+                            matchScore: Math.round(c.readiness_score || 85),
+                            skills: c.ayush_enrolled
+                                ? ['Herb Standardization', 'Clinical Trials', 'Pharmacovigilance']
+                                : ['Python', 'PostgreSQL', 'Microservices', 'FastAPI'],
+                            projects: ['Automated Telemetry Pipeline', 'Institutional Performance Dashboard'],
+                            researchPapers: ['Standardization Analysis (DOI: 10.1016/sih.2026)'],
+                            github: 'https://github.com/candidate-repo',
+                            level: 'Advanced',
+                            abcCredits: 26,
+                            rejections: []
+                        });
+                    } else {
+                        if (c.readiness_score) existing.matchScore = Math.round(c.readiness_score);
+                        if (c.department) existing.targetRole = c.department;
+                    }
+                });
+
+                // Update UI if the Recruiter portal is open
+                if (DB.currentUser && DB.currentUser.role === 'industrialist') {
+                    this.render();
+                }
+            }
+        } catch (error) {
+            console.warn("Could not reach FastAPI backend (PostgreSQL offline). Using default database.", error);
+            DB.isPostgresConnected = false;
+        }
+    },
+
+    render: function () {
         const app = document.getElementById('app');
         if (DB.currentUser) {
             this.renderDashboard(app);
@@ -379,13 +433,13 @@ const App = {
         }
     },
 
-    setStudentTab: function(tabName) {
+    setStudentTab: function (tabName) {
         DB.activeStudentTab = tabName;
-        DB.selectedJob = null; 
+        DB.selectedJob = null;
         this.render();
     },
 
-    showToast: function(message, type = 'info') {
+    showToast: function (message, type = 'info') {
         const container = document.getElementById('toast-container');
         if (!container) return;
         const toast = document.createElement('div');
@@ -404,7 +458,7 @@ const App = {
         }, 3000);
     },
 
-    getCloseButton: function(onClickHandler = "App.render()") {
+    getCloseButton: function (onClickHandler = "App.render()") {
         return `
             <button onclick="${onClickHandler}" aria-label="Close" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition shadow-sm z-20">
                 <i class="fa-solid fa-xmark text-base"></i>
@@ -412,7 +466,7 @@ const App = {
         `;
     },
 
-    getLogoHtml: function(size = 'normal') {
+    getLogoHtml: function (size = 'normal') {
         const iconSize = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
         const textClass = size === 'large' ? 'text-3xl' : 'text-2xl';
         return `
@@ -434,7 +488,7 @@ const App = {
         `;
     },
 
-    renderGovBanner: function() {
+    renderGovBanner: function () {
         return `
             <div class="bg-slate-900/90 backdrop-blur-md text-slate-300 text-xs border-b border-slate-800 py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center z-50 relative">
                 <div class="flex items-center space-x-3">
@@ -453,7 +507,7 @@ const App = {
         `;
     },
 
-    renderLanding: function(app) {
+    renderLanding: function (app) {
         app.innerHTML = `
             <div class="min-h-screen text-slate-800 flex flex-col justify-between">
                 ${this.renderGovBanner()}
@@ -572,7 +626,7 @@ const App = {
         `;
     },
 
-    showLogin: function(role) {
+    showLogin: function (role) {
         const app = document.getElementById('app');
         const roleConfig = {
             student: { title: 'Student & Researcher Login', icon: 'fa-user-graduate', color: 'blue', demo: 'student@demo.com' },
@@ -620,7 +674,7 @@ const App = {
         `;
     },
 
-    showRegister: function(role) {
+    showRegister: function (role) {
         const app = document.getElementById('app');
         let extraFields = '';
 
@@ -681,7 +735,7 @@ const App = {
         `;
     },
 
-    handleLogin: function(e, role) {
+    handleLogin: function (e, role) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -697,7 +751,7 @@ const App = {
         }
     },
 
-    handleRegister: function(e, role) {
+    handleRegister: function (e, role) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
@@ -734,13 +788,13 @@ const App = {
         this.render();
     },
 
-    logout: function() {
+    logout: function () {
         DB.currentUser = null;
         this.showToast('Logged out successfully.', 'info');
         this.render();
     },
 
-    renderDashboard: function(app) {
+    renderDashboard: function (app) {
         const user = DB.currentUser;
         let dashboardHtml = '';
 
@@ -779,7 +833,7 @@ const App = {
         `;
     },
 
-    renderStudentView: function(user) {
+    renderStudentView: function (user) {
         if (!user.domain || !user.assessment) {
             return this.renderStudentOnboardingForm(user);
         }
@@ -790,8 +844,8 @@ const App = {
 
         const currentTab = DB.activeStudentTab || 'overview';
 
-        const tabBtnStyle = (tab) => currentTab === tab 
-            ? 'bg-blue-600 text-white font-semibold shadow-sm' 
+        const tabBtnStyle = (tab) => currentTab === tab
+            ? 'bg-blue-600 text-white font-semibold shadow-sm'
             : 'bg-white/70 hover:bg-slate-100 text-slate-600 font-medium border border-slate-200';
 
         return `
@@ -869,8 +923,7 @@ const App = {
         `;
     },
 
-    renderStudentOverviewTab: function(user) {
-        // Build the Rejection / Feedback Loop HTML if the student has been rejected
+    renderStudentOverviewTab: function (user) {
         const rejectionsHtml = (user.rejections && user.rejections.length > 0) ? `
             <div class="lg:col-span-3 glass-card rounded-xl shadow-sm border border-rose-200 p-6 space-y-4 mt-2">
                 <div class="flex justify-between items-center border-b border-rose-100 pb-3">
@@ -971,9 +1024,9 @@ const App = {
         `;
     },
 
-    renderStudentCoursesTab: function(user) {
+    renderStudentCoursesTab: function (user) {
         const domainCourses = DB.courses.filter(c => c.domain === user.domain || c.domain === 'engineering');
-        
+
         return `
             <div class="space-y-6">
                 <div class="grid sm:grid-cols-3 gap-4">
@@ -1057,7 +1110,7 @@ const App = {
         `;
     },
 
-    renderStudentGithubTab: function(user) {
+    renderStudentGithubTab: function (user) {
         return `
             <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -1100,7 +1153,7 @@ const App = {
         `;
     },
 
-    renderStudentInterviewTab: function(user) {
+    renderStudentInterviewTab: function (user) {
         const domainQuestions = INTERVIEW_QUESTIONS_BANK[user.domain] || INTERVIEW_QUESTIONS_BANK.ayush;
 
         return `
@@ -1244,7 +1297,7 @@ const App = {
                                     <div class="p-3.5 bg-white/80 rounded-xl border border-slate-200 space-y-2 card-hover">
                                         <div class="flex justify-between items-start">
                                             <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">Question ${idx + 1}</span>
-                                            <button onclick="App.showToast('Generating AI feedback for Q${idx+1} (Match score: ${user.matchScore || 88}%)...', 'info')" class="text-[11px] font-bold text-emerald-700 hover:underline">
+                                            <button onclick="App.showToast('Generating AI feedback for Q${idx + 1} (Match score: ${user.matchScore || 88}%)...', 'info')" class="text-[11px] font-bold text-emerald-700 hover:underline">
                                                 <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Feedback (${user.matchScore || 88}% Match)
                                             </button>
                                         </div>
@@ -1260,11 +1313,11 @@ const App = {
         `;
     },
 
-    showPopupAiStandout: function() {
+    showPopupAiStandout: function () {
         this.showToast('AI Tip: Use STAR method and cite your APAAR verified credentials to stand out by 35%!', 'success');
     },
 
-    renderStudentResumeTab: function(user) {
+    renderStudentResumeTab: function (user) {
         return `
             <div class="space-y-6">
                 <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white rounded-2xl p-6 shadow-lg flex flex-wrap justify-between items-center gap-4">
@@ -1374,7 +1427,7 @@ const App = {
         `;
     },
 
-    handleResumeUpload: function(e) {
+    handleResumeUpload: function (e) {
         const file = e.target.files[0];
         if (file) {
             this.showToast(`Successfully uploaded "${file.name}"! AI parsing initiated.`, 'success');
@@ -1386,7 +1439,7 @@ const App = {
         }
     },
 
-    runAiResumeAudit: function() {
+    runAiResumeAudit: function () {
         this.showToast('Running AI keyword & ATS compatibility analysis...', 'info');
         setTimeout(() => {
             const feedbackBox = document.getElementById('ai-resume-feedback-box');
@@ -1395,7 +1448,7 @@ const App = {
         }, 800);
     },
 
-    runAiMakeChanges: function() {
+    runAiMakeChanges: function () {
         this.showToast('Applying AI structural enhancements and formatting fixes...', 'info');
         setTimeout(() => {
             const feedbackBox = document.getElementById('ai-resume-feedback-box');
@@ -1404,7 +1457,7 @@ const App = {
         }, 1000);
     },
 
-    renderStudentOpportunitiesTab: function(user) {
+    renderStudentOpportunitiesTab: function (user) {
         const domainInternships = DB.internships.filter(i => i.domain === user.domain || i.domain === 'engineering');
         const domainPlacements = DB.placements.filter(p => p.domain === user.domain || p.domain === 'engineering');
         const selectedJob = DB.selectedJob;
@@ -1490,7 +1543,7 @@ const App = {
         `;
     },
 
-    selectJob: function(type, id) {
+    selectJob: function (type, id) {
         const list = type === 'internship' ? DB.internships : DB.placements;
         const job = list.find(item => item.id === id);
         if (job) {
@@ -1500,7 +1553,7 @@ const App = {
         }
     },
 
-    renderJobDetailModal: function(job, user) {
+    renderJobDetailModal: function (job, user) {
         const matchPct = user.matchScore || 88;
         return `
             <div class="glass-card rounded-2xl shadow-2xl border-2 border-blue-500 p-6 space-y-6 relative animate-fadeIn">
@@ -1549,20 +1602,20 @@ const App = {
         `;
     },
 
-    applyOpportunity: function(type, title) {
+    applyOpportunity: function (type, title) {
         this.showToast(`Successfully applied to ${title} using APAAR profile!`, 'success');
         DB.selectedJob = null;
         this.render();
     },
 
-    verifyGithubRepo: function() {
+    verifyGithubRepo: function () {
         this.showToast('Triggering GitHub AST inspection engine...', 'info');
         setTimeout(() => {
             this.showToast('Git audit completed! Repository static analysis verified.', 'success');
         }, 1200);
     },
 
-    renderStudentOnboardingForm: function(user) {
+    renderStudentOnboardingForm: function (user) {
         const currentDomain = user.domain || 'ayush';
         const preset = DOMAIN_PRESETS[currentDomain] || DOMAIN_PRESETS.ayush;
 
@@ -1641,12 +1694,12 @@ const App = {
         `;
     },
 
-    getQuestionHtmlForDomain: function(domain) {
+    getQuestionHtmlForDomain: function (domain) {
         const questions = AIEngine.questionBank[domain] || AIEngine.questionBank.ayush;
         return questions[0].q;
     },
 
-    handleDomainChange: function(domain) {
+    handleDomainChange: function (domain) {
         const preset = DOMAIN_PRESETS[domain] || DOMAIN_PRESETS.ayush;
         document.getElementById('formSubDomain').value = preset.subDomain;
         document.getElementById('formTargetRole').value = preset.targetRole;
@@ -1657,7 +1710,7 @@ const App = {
         document.getElementById('dynamicQuestionText').innerText = this.getQuestionHtmlForDomain(domain);
     },
 
-    saveStudentProfile: function(e) {
+    saveStudentProfile: function (e) {
         e.preventDefault();
         const user = DB.currentUser;
         user.domain = document.getElementById('formDomain').value;
@@ -1686,12 +1739,12 @@ const App = {
         this.render();
     },
 
-    showRetakeAssessment: function() {
+    showRetakeAssessment: function () {
         DB.currentUser.assessment = null;
         this.render();
     },
 
-    startCourseQuiz: function(courseId) {
+    startCourseQuiz: function (courseId) {
         const course = DB.courses.find(c => c.id === courseId);
         if (!course || !course.quiz) return;
 
@@ -1727,7 +1780,7 @@ const App = {
         `;
     },
 
-    submitCourseQuiz: function(e, courseId) {
+    submitCourseQuiz: function (e, courseId) {
         e.preventDefault();
         const course = DB.courses.find(c => c.id === courseId);
         DB.currentUser.abcCredits = (DB.currentUser.abcCredits || 24) + course.nepCredits;
@@ -1735,7 +1788,7 @@ const App = {
         this.render();
     },
 
-    showPublishCourseForm: function() {
+    showPublishCourseForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
             <div class="min-h-screen flex flex-col justify-center items-center p-4 relative">
@@ -1772,7 +1825,7 @@ const App = {
         `;
     },
 
-    handlePublishCourse: function(e) {
+    handlePublishCourse: function (e) {
         e.preventDefault();
         const newCourse = {
             id: DB.courses.length + 1,
@@ -1792,8 +1845,7 @@ const App = {
         this.render();
     },
 
-    // ==================== NEW SIH UPGRADES: ACADEMICIAN HELPERS ====================
-    runSyllabusAudit: function() {
+    runSyllabusAudit: function () {
         this.showToast('AI Syllabus Engine analyzing industry trends...', 'info');
         setTimeout(() => {
             const domainKey = DB.currentUser.domain || 'engineering';
@@ -1811,14 +1863,14 @@ const App = {
         }, 1500);
     },
 
-    mintAbcCredits: function(studentId) {
+    mintAbcCredits: function (studentId) {
         this.showToast(`<i class="fa-solid fa-link"></i> Securing via Blockchain Hash: 0x${Math.random().toString(16).substr(2, 8).toUpperCase()}...`, 'info');
         setTimeout(() => {
             this.showToast('Credits successfully minted and pushed to Government Academic Bank of Credits (ABC)!', 'success');
         }, 1200);
     },
 
-    renderInstitutionalChart: function() {
+    renderInstitutionalChart: function () {
         const ctx = document.getElementById('skillGapChart');
         if (!ctx) return;
 
@@ -1844,14 +1896,13 @@ const App = {
         });
     },
 
-    renderAcademicianView: function(user) {
+    renderAcademicianView: function (user) {
         const myCourses = DB.courses.filter(c => c.author === user.name);
         const otherCourses = DB.courses.filter(c => c.author !== user.name);
-        
+
         const domainKey = user.domain || 'engineering';
         const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
 
-        // Schedule chart rendering since the canvas is created in this string
         setTimeout(() => App.renderInstitutionalChart(), 50);
 
         return `
@@ -1867,7 +1918,6 @@ const App = {
                     </button>
                 </div>
 
-                <!-- Feedback Loop / Institutional Alerts -->
                 ${DB.institutionalAlerts.length > 0 ? `
                     <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 shadow-sm space-y-2">
                         <h3 class="text-sm font-bold text-rose-800"><i class="fa-solid fa-bell mr-2"></i> Recruiter Feedback Alerts (Action Required)</h3>
@@ -1881,7 +1931,6 @@ const App = {
                     </div>
                 ` : ''}
 
-                <!-- AI Syllabus Auditor & Skill-Gap Analytics -->
                 <div class="grid lg:grid-cols-2 gap-6">
                     <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -1970,8 +2019,7 @@ const App = {
         `;
     },
 
-    // ==================== NEW SIH UPGRADES: INDUSTRIALIST HELPERS ====================
-    toggleNapsCard: function() {
+    toggleNapsCard: function () {
         const checkbox = document.getElementById('napsCompliant');
         const card = document.getElementById('napsCalcCard');
         if (!checkbox || !card) return;
@@ -1979,7 +2027,6 @@ const App = {
         if (checkbox.checked) {
             card.classList.remove('hidden');
             const salaryInput = document.getElementById('jobSalary').value;
-            // Basic extraction of numbers for demo purposes
             const amount = parseInt(salaryInput.replace(/[^0-9]/g, '')) || 10000;
             const govtShare = (amount * 0.25).toLocaleString();
             document.getElementById('napsGovtShare').innerText = `₹${govtShare}`;
@@ -1988,25 +2035,24 @@ const App = {
         }
     },
 
-    toggleBlindHiring: function() {
+    toggleBlindHiring: function () {
         DB.isBlindHiring = !DB.isBlindHiring;
         this.render();
         this.showToast(DB.isBlindHiring ? 'Blind Hiring Mode Enabled: Names hidden to prevent bias.' : 'Blind Hiring Mode Disabled.', 'info');
     },
 
-    filterCandidates: function() {
+    filterCandidates: function () {
         const query = document.getElementById('aiCandidateSearch').value.toLowerCase();
         DB.aiSearchQuery = query;
         this.render();
         this.showToast('AI Filter Applied to Candidate Pool', 'success');
     },
 
-    logMissingSkill: function(studentId) {
+    logMissingSkill: function (studentId) {
         const skill = prompt("Enter the critical skill this candidate lacked (e.g., Cloud Architecture, Pharmacovigilance):");
         if (skill && skill.trim() !== "") {
             const student = DB.users.find(u => u.id === studentId);
             if (student) {
-                // Feedback Loop to Student - REJECTION LOGGING
                 student.rejections = student.rejections || [];
                 student.rejections.push({
                     company: DB.currentUser.company,
@@ -2014,17 +2060,16 @@ const App = {
                     date: new Date().toLocaleDateString()
                 });
 
-                // Update AI Gaps and Roadmap for the student
                 if (student.assessment) {
                     if (student.assessment.gaps && !student.assessment.gaps.includes(skill)) {
                         student.assessment.gaps.push(skill);
                     } else if (!student.assessment.gaps) {
                         student.assessment.gaps = [skill];
                     }
-                    
+
                     if (!student.assessment.suggestions) student.assessment.suggestions = [];
                     student.assessment.suggestions.push(`Enroll in NEP-accredited module for ${skill} (Based on Industry Feedback)`);
-                    
+
                     if (!student.assessment.roadmap) student.assessment.roadmap = [];
                     student.assessment.roadmap.push({
                         phase: 'Industry Feedback Recovery',
@@ -2032,8 +2077,7 @@ const App = {
                         desc: `A customized AI learning path to acquire ${skill} based on recent recruiter rejection feedback from ${DB.currentUser.company}.`
                     });
                 }
-                
-                // Feedback Loop to Academician Dashboard
+
                 DB.institutionalAlerts.push({
                     company: DB.currentUser.company,
                     skill: skill
@@ -2045,7 +2089,7 @@ const App = {
         }
     },
 
-    showPostJobForm: function() {
+    showPostJobForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
             <div class="min-h-screen flex flex-col justify-center items-center p-4 relative">
@@ -2079,7 +2123,6 @@ const App = {
                             <input type="text" id="jobSalary" required onkeyup="App.toggleNapsCard()" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg">
                         </div>
                         
-                        <!-- NAPS 2.0 Compliance -->
                         <div class="flex items-center space-x-2">
                             <input type="checkbox" id="napsCompliant" onchange="App.toggleNapsCard()" class="w-4 h-4 text-emerald-600">
                             <label class="text-xs font-bold text-slate-700">NAPS 2.0 Compliant (Govt Apprenticeship)</label>
@@ -2100,7 +2143,7 @@ const App = {
         `;
     },
 
-    handlePostJob: function(e) {
+    handlePostJob: function (e) {
         e.preventDefault();
         const type = document.getElementById('jobType').value;
         const newJob = {
@@ -2125,9 +2168,9 @@ const App = {
         this.render();
     },
 
-    deleteJob: function(type, id) {
-        if(confirm("Are you sure you want to delete this opportunity?")) {
-            if(type === 'internship') {
+    deleteJob: function (type, id) {
+        if (confirm("Are you sure you want to delete this opportunity?")) {
+            if (type === 'internship') {
                 DB.internships = DB.internships.filter(job => job.id !== id);
             } else {
                 DB.placements = DB.placements.filter(job => job.id !== id);
@@ -2137,7 +2180,7 @@ const App = {
         }
     },
 
-    renderIndustrialistView: function(user) {
+    renderIndustrialistView: function (user) {
         const myInternships = DB.internships.filter(i => i.company === user.company);
         const myPlacements = DB.placements.filter(p => p.company === user.company);
 
@@ -2150,7 +2193,7 @@ const App = {
 
         // Filter based on AI Search Query
         if (DB.aiSearchQuery) {
-            candidatePool = candidatePool.filter(u => 
+            candidatePool = candidatePool.filter(u =>
                 (u.skills && u.skills.join(' ').toLowerCase().includes(DB.aiSearchQuery)) ||
                 (u.domain && u.domain.toLowerCase().includes(DB.aiSearchQuery))
             );
@@ -2158,15 +2201,25 @@ const App = {
 
         return `
             <div class="space-y-6">
-                <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 flex justify-between items-center">
+                <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 flex flex-wrap justify-between items-center gap-4">
                     <div>
-                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Recruiter & R&D Portal</span>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Recruiter & R&D Portal</span>
+                            ${DB.isPostgresConnected
+                ? '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>PostgreSQL Synced</span>'
+                : '<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">Local Mode</span>'}
+                        </div>
                         <h2 class="text-2xl font-bold text-slate-900 mt-1">${user.name}</h2>
                         <p class="text-xs text-slate-500">${user.company} • Domain: <strong class="uppercase">${user.domain}</strong></p>
                     </div>
-                    <button onclick="App.showPostJobForm()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-sm">
-                        <i class="fa-solid fa-plus mr-1"></i> Post Internship / Placement
-                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="App.fetchCandidates()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2.5 rounded-lg transition border border-slate-300">
+                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh DB
+                        </button>
+                        <button onclick="App.showPostJobForm()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-sm">
+                            <i class="fa-solid fa-plus mr-1"></i> Post Internship / Placement
+                        </button>
+                    </div>
                 </div>
 
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
@@ -2206,9 +2259,12 @@ const App = {
                 <!-- Trustless Skill-Verification Hub (Candidate Pool) -->
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
-                        <h3 class="text-base font-bold text-slate-800 flex items-center">
-                            <i class="fa-solid fa-users text-amber-600 mr-2"></i> Verified Candidate Pool & Applications
-                        </h3>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-users text-amber-600 mr-2"></i> Verified Candidate Pool & Applications
+                            </h3>
+                            <p class="text-xs text-slate-500">Live PostgreSQL candidates fetched directly from backend database.</p>
+                        </div>
                         
                         <!-- Blind Hiring Toggle -->
                         <div class="flex items-center space-x-2">
@@ -2232,10 +2288,9 @@ const App = {
                         ${candidatePool.map(s => `
                             <div class="p-4 bg-white/80 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-4">
                                 <div>
-                                    <!-- Applies blur class if Blind Hiring is true -->
                                     <h4 class="font-bold text-slate-900 text-sm ${DB.isBlindHiring ? 'blur-text' : ''}">${s.name}</h4>
                                     <p class="text-xs text-slate-500 font-mono">
-                                        Target: ${s.targetRole || 'Not Specified'} 
+                                        Target: ${s.targetRole || s.subDomain || 'Not Specified'} 
                                         ${DB.isBlindHiring ? `| <strong class="text-emerald-700 ml-1">APAAR ID: ${s.apaarId}</strong>` : ''}
                                     </p>
                                     <div class="flex gap-1.5 mt-2">
@@ -2247,7 +2302,6 @@ const App = {
                                         <span class="text-sm font-bold text-indigo-700">${s.matchScore || s.assessment?.score || 85}% Match</span>
                                         <span class="block text-[10px] text-emerald-700 font-semibold">APAAR Verified</span>
                                     </div>
-                                    <!-- Feedback Loop Trigger -->
                                     <button onclick="App.logMissingSkill(${s.id})" class="text-[10px] border border-rose-300 text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-bold transition shadow-sm">
                                         <i class="fa-solid fa-xmark mr-1"></i> Reject & Log Skill Gap
                                     </button>
