@@ -99,7 +99,7 @@ const GlobalBackgroundEngine = {
     }
 };
 
-// ==================== IN-MEMORY DATABASE ====================
+// ==================== IN-MEMORY DATABASE & SQL SYNC ====================
 const DB = {
     users: [],
     courses: [],
@@ -111,70 +111,120 @@ const DB = {
     isBlindHiring: false,
     aiSearchQuery: '',
     institutionalAlerts: [],
-    isPostgresConnected: false,
 
-    seed: function () {
-        if (this.users.length === 0) {
-            this.users = [
-                {
-                    id: 1,
-                    name: 'Aaditya Sharma',
-                    email: 'student@demo.com',
-                    password: 'demo123',
+    seed: async function () {
+        const defaultUsers = [
+            {
+                id: 1,
+                name: 'Aaditya Sharma',
+                email: 'student@demo.com',
+                password: 'demo123',
+                role: 'student',
+                apaarId: '8942-7712-4401',
+                apaarVerified: true,
+                domain: 'ayush',
+                subDomain: 'Ayurvedic Pharmacognosy & Dravyaguna',
+                targetRole: 'Senior Clinical AYUSH Researcher',
+                matchScore: 84,
+                skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance'],
+                projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
+                researchPapers: ['Standardization of Ashwagandha Withanolides (DOI: 10.1016/ayush.2025.04)'],
+                github: 'https://github.com/aaditya-ayush-research',
+                level: 'Advanced',
+                abcCredits: 28,
+                rejections: [],
+                assessment: {
+                    score: 88,
+                    level: 'Advanced (NHEQF Level 7)',
+                    repoAudit: 'Clean modular codebase, automated quality control scripts, standardized test fixtures.',
+                    researchWeight: 'High (Indexed in Scopus / UGC-CARE AYUSH Category)',
+                    gaps: ['Ayush GCP Regulatory Compliance', 'Bioinformatics docking tools'],
+                    suggestions: [
+                        'Complete ICMR/AYUSH Good Clinical Practice (GCP) Module',
+                        'Undertake molecular docking workflows for active phyto-compounds'
+                    ],
+                    roadmap: [
+                        { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
+                        { phase: 'Phase 2 (Month 3-4)', title: 'Bio-Analytical & Clinical Protocols', desc: 'Master HPLC/HPTLC fingerprinting, AYUSH GCP, and adverse drug reaction (ADR) reporting and pharmacovigilance protocols.' },
+                        { phase: 'Phase 3 (Month 5-6)', title: 'Industry Integration & Clinical Trials', desc: 'Undertake real-time clinical data compilation, stability testing, and Ministry compliance audits.' }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                name: 'Prof. (Dr.) V. K. Joshi',
+                email: 'academic@demo.com',
+                password: 'demo123',
+                role: 'academician',
+                institution: 'National Institute of Ayurveda / All India Council',
+                domain: 'ayush',
+                skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'],
+                courses: [1, 2]
+            },
+            {
+                id: 3,
+                name: 'Himalaya & Dabur Health R&D',
+                email: 'industry@demo.com',
+                password: 'demo123',
+                role: 'industrialist',
+                company: 'Dabur India R&D Labs',
+                domain: 'ayush',
+                skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling']
+            }
+        ];
+
+        // Fetch live candidates from FastAPI / PopSQL PostgreSQL backend
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/candidates");
+            if (res.ok) {
+                const liveCandidates = await res.json();
+                console.log("Synced live candidates from database:", liveCandidates);
+
+                const mappedSqlStudents = liveCandidates.map((c, idx) => ({
+                    id: 100 + (c.id || idx),
+                    name: c.name,
+                    email: `${c.name.toLowerCase().replace(/\s+/g, '.')}@demo.edu.in`,
+                    password: 'demo',
                     role: 'student',
-                    apaarId: '8942-7712-4401',
+                    apaarId: `8942-7712-${1000 + (c.id || idx)}`,
                     apaarVerified: true,
-                    domain: 'ayush',
-                    subDomain: 'Ayurvedic Pharmacognosy & Dravyaguna',
-                    targetRole: 'Senior Clinical AYUSH Researcher',
-                    matchScore: 84,
-                    skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance'],
-                    projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
-                    researchPapers: ['Standardization of Ashwagandha Withanolides (DOI: 10.1016/ayush.2025.04)'],
-                    github: 'https://github.com/aaditya-ayush-research',
+                    domain: c.ayush_enrolled ? 'ayush' : 'engineering',
+                    subDomain: c.department,
+                    targetRole: c.ayush_enrolled ? 'Clinical Researcher' : 'Systems Engineer',
+                    matchScore: Math.round(c.readiness_score || 85),
+                    skills: c.ayush_enrolled ? ['Standardization', 'Clinical Protocols'] : ['Full-Stack', 'System Architecture'],
+                    projects: ['SkillBridge Telemetry Integration'],
+                    researchPapers: [],
+                    github: 'https://github.com/aaditya-eng-systems',
                     level: 'Advanced',
-                    abcCredits: 28,
+                    abcCredits: 24,
                     rejections: [],
                     assessment: {
-                        score: 88,
+                        score: Math.round(c.readiness_score || 85),
                         level: 'Advanced (NHEQF Level 7)',
-                        repoAudit: 'Clean modular codebase, automated quality control scripts, standardized test fixtures.',
-                        researchWeight: 'High (Indexed in Scopus / UGC-CARE AYUSH Category)',
-                        gaps: ['Ayush GCP Regulatory Compliance', 'Bioinformatics docking tools'],
-                        suggestions: [
-                            'Complete ICMR/AYUSH Good Clinical Practice (GCP) Module',
-                            'Undertake molecular docking workflows for active phyto-compounds'
-                        ],
+                        repoAudit: 'Database synchronized candidate record.',
+                        researchWeight: 'Verified Academic Standing',
+                        gaps: ['Microservices Integration'],
+                        suggestions: ['Complete NEP Capstone Verification'],
                         roadmap: [
-                            { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
-                            { phase: 'Phase 2 (Month 3-4)', title: 'Bio-Analytical & Clinical Protocols', desc: 'Master HPLC/HPTLC fingerprinting, AYUSH GCP, and adverse drug reaction (ADR) reporting and pharmacovigilance protocols.' },
-                            { phase: 'Phase 3 (Month 5-6)', title: 'Industry Integration & Clinical Trials', desc: 'Undertake real-time clinical data compilation, stability testing, and Ministry compliance audits.' }
+                            { phase: 'Phase 1', title: 'Curriculum Foundations', desc: 'Core engineering and domain modules.' }
                         ]
                     }
-                },
-                {
-                    id: 2,
-                    name: 'Prof. (Dr.) V. K. Joshi',
-                    email: 'academic@demo.com',
-                    password: 'demo123',
-                    role: 'academician',
-                    institution: 'National Institute of Ayurveda / All India Council',
-                    domain: 'ayush',
-                    skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'],
-                    courses: [1, 2]
-                },
-                {
-                    id: 3,
-                    name: 'Himalaya & Dabur Health R&D',
-                    email: 'industry@demo.com',
-                    password: 'demo123',
-                    role: 'industrialist',
-                    company: 'Dabur India R&D Labs',
-                    domain: 'ayush',
-                    skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling']
-                }
-            ];
+                }));
 
+                this.users = [
+                    ...defaultUsers.filter(u => u.role !== 'student'),
+                    ...mappedSqlStudents
+                ];
+            } else {
+                this.users = defaultUsers;
+            }
+        } catch (err) {
+            console.warn("FastAPI backend not active. Falling back to local data.", err);
+            this.users = defaultUsers;
+        }
+
+        if (this.courses.length === 0) {
             this.courses = [
                 {
                     id: 1,
@@ -206,7 +256,9 @@ const DB = {
                     certified: true
                 }
             ];
+        }
 
+        if (this.internships.length === 0) {
             this.internships = [
                 {
                     id: 1,
@@ -224,7 +276,9 @@ const DB = {
                     requirements: ['B.Pharm / M.Pharm or relevant AYUSH background', 'Familiarity with pharmacopoeial standards', 'Analytical mindset']
                 }
             ];
+        }
 
+        if (this.placements.length === 0) {
             this.placements = [
                 {
                     id: 1,
@@ -363,65 +417,12 @@ const AIEngine = {
 };
 
 const App = {
-    init: function () {
-        DB.seed();
+    init: async function () {
+        await DB.seed();
         DB.currentUser = null;
         DB.activeStudentTab = 'overview';
         GlobalBackgroundEngine.init();
-        this.fetchCandidates();
         this.render();
-    },
-
-    // ==================== LIVE POSTGRESQL API INTEGRATION ====================
-    fetchCandidates: async function () {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/candidates');
-            if (response.ok) {
-                const candidates = await response.json();
-                console.log("✅ Fetched candidates from PostgreSQL:", candidates);
-                DB.isPostgresConnected = true;
-
-                // Sync each candidate from PostgreSQL into the DB.users candidate pool
-                candidates.forEach(c => {
-                    const existing = DB.users.find(u => u.name.toLowerCase() === c.name.toLowerCase());
-                    if (!existing) {
-                        DB.users.push({
-                            id: DB.users.length + 1,
-                            name: c.name,
-                            email: `${c.name.toLowerCase().replace(/\s+/g, '')}@student.gov.in`,
-                            password: 'demo',
-                            role: 'student',
-                            apaarId: `8942-7712-${1000 + c.id}`,
-                            apaarVerified: true,
-                            domain: c.ayush_enrolled ? 'ayush' : 'engineering',
-                            subDomain: c.department,
-                            targetRole: c.department,
-                            matchScore: Math.round(c.readiness_score || 85),
-                            skills: c.ayush_enrolled
-                                ? ['Herb Standardization', 'Clinical Trials', 'Pharmacovigilance']
-                                : ['Python', 'PostgreSQL', 'Microservices', 'FastAPI'],
-                            projects: ['Automated Telemetry Pipeline', 'Institutional Performance Dashboard'],
-                            researchPapers: ['Standardization Analysis (DOI: 10.1016/sih.2026)'],
-                            github: 'https://github.com/candidate-repo',
-                            level: 'Advanced',
-                            abcCredits: 26,
-                            rejections: []
-                        });
-                    } else {
-                        if (c.readiness_score) existing.matchScore = Math.round(c.readiness_score);
-                        if (c.department) existing.targetRole = c.department;
-                    }
-                });
-
-                // Update UI if the Recruiter portal is open
-                if (DB.currentUser && DB.currentUser.role === 'industrialist') {
-                    this.render();
-                }
-            }
-        } catch (error) {
-            console.warn("Could not reach FastAPI backend (PostgreSQL offline). Using default database.", error);
-            DB.isPostgresConnected = false;
-        }
     },
 
     render: function () {
@@ -1845,20 +1846,20 @@ const App = {
         this.render();
     },
 
+    // ==================== NEW SIH UPGRADES: ACADEMICIAN HELPERS ====================
     runSyllabusAudit: function () {
         this.showToast('AI Syllabus Engine analyzing industry trends...', 'info');
         setTimeout(() => {
-            const domainKey = DB.currentUser.domain || 'engineering';
-            const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
-
             const reportDiv = document.getElementById('syllabusAuditReport');
-            reportDiv.classList.remove('hidden');
-            reportDiv.innerHTML = `
-                <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl text-xs space-y-2">
-                    <p><strong><i class="fa-solid fa-triangle-exclamation mr-1"></i> Industry Alignment Warning:</strong> ${analytics.syllabusAudit.warning}</p>
-                    <p class="text-emerald-700 font-semibold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Suggestion: ${analytics.syllabusAudit.suggestion}</p>
-                </div>
-            `;
+            if (reportDiv) {
+                reportDiv.classList.remove('hidden');
+                reportDiv.innerHTML = `
+                    <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl text-xs space-y-2">
+                        <p><strong><i class="fa-solid fa-triangle-exclamation mr-1"></i> Industry Alignment Warning:</strong> Curriculum contains < 10% Cloud Microservices / Real-time Telemetry modules.</p>
+                        <p class="text-emerald-700 font-semibold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Suggestion: Introduce 4-credit Capstone focused on Vector Search & Microservices.</p>
+                    </div>
+                `;
+            }
             this.showToast('Curriculum alignment gap detected.', 'success');
         }, 1500);
     },
@@ -1874,16 +1875,13 @@ const App = {
         const ctx = document.getElementById('skillGapChart');
         if (!ctx) return;
 
-        const domainKey = DB.currentUser.domain || 'engineering';
-        const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
-
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: analytics.chart.labels,
+                labels: ['System Design', 'Microservices', 'HPLC Profiling', 'CI/CD Pipelines'],
                 datasets: [{
                     label: '% of Students Failing AI Mock Interviews',
-                    data: analytics.chart.data,
+                    data: [68, 54, 42, 38],
                     backgroundColor: ['#e11d48', '#f59e0b', '#10b981', '#3b82f6'],
                     borderRadius: 4
                 }]
@@ -1899,9 +1897,6 @@ const App = {
     renderAcademicianView: function (user) {
         const myCourses = DB.courses.filter(c => c.author === user.name);
         const otherCourses = DB.courses.filter(c => c.author !== user.name);
-
-        const domainKey = user.domain || 'engineering';
-        const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
 
         setTimeout(() => App.renderInstitutionalChart(), 50);
 
@@ -1937,7 +1932,7 @@ const App = {
                             <i class="fa-solid fa-wand-magic-sparkles text-emerald-600 mr-2"></i> AI Syllabus Auditor
                         </h3>
                         <p class="text-xs text-slate-500">Paste your course syllabus below to identify gaps against active recruiter demands.</p>
-                        <textarea rows="4" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="${analytics.syllabusAudit.placeholder}"></textarea>
+                        <textarea rows="4" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="Paste department curriculum units here..."></textarea>
                         <button onclick="App.runSyllabusAudit()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-sm">
                             Audit against Industry Demands
                         </button>
@@ -1948,7 +1943,7 @@ const App = {
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-chart-bar text-blue-600 mr-2"></i> Institutional Skill-Gap Analytics
                         </h3>
-                        <p class="text-xs text-slate-500">Macro-view telemetry based on PICT students failing AI mock interviews.</p>
+                        <p class="text-xs text-slate-500">Macro-view telemetry based on students failing AI mock interviews.</p>
                         <canvas id="skillGapChart" class="w-full h-40"></canvas>
                     </div>
                 </div>
@@ -2019,6 +2014,7 @@ const App = {
         `;
     },
 
+    // ==================== NEW SIH UPGRADES: INDUSTRIALIST HELPERS ====================
     toggleNapsCard: function () {
         const checkbox = document.getElementById('napsCompliant');
         const card = document.getElementById('napsCalcCard');
@@ -2184,14 +2180,12 @@ const App = {
         const myInternships = DB.internships.filter(i => i.company === user.company);
         const myPlacements = DB.placements.filter(p => p.company === user.company);
 
-        // Filter students to EXCLUDE those who have been rejected by this specific company
         let candidatePool = DB.users.filter(u => {
             if (u.role !== 'student') return false;
             if (!u.rejections) return true;
             return !u.rejections.some(r => r.company === user.company);
         });
 
-        // Filter based on AI Search Query
         if (DB.aiSearchQuery) {
             candidatePool = candidatePool.filter(u =>
                 (u.skills && u.skills.join(' ').toLowerCase().includes(DB.aiSearchQuery)) ||
@@ -2201,25 +2195,15 @@ const App = {
 
         return `
             <div class="space-y-6">
-                <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 flex flex-wrap justify-between items-center gap-4">
+                <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 flex justify-between items-center">
                     <div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Recruiter & R&D Portal</span>
-                            ${DB.isPostgresConnected
-                ? '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded flex items-center"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>PostgreSQL Synced</span>'
-                : '<span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded">Local Mode</span>'}
-                        </div>
+                        <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Recruiter & R&D Portal</span>
                         <h2 class="text-2xl font-bold text-slate-900 mt-1">${user.name}</h2>
                         <p class="text-xs text-slate-500">${user.company} • Domain: <strong class="uppercase">${user.domain}</strong></p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="App.fetchCandidates()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2.5 rounded-lg transition border border-slate-300">
-                            <i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh DB
-                        </button>
-                        <button onclick="App.showPostJobForm()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-sm">
-                            <i class="fa-solid fa-plus mr-1"></i> Post Internship / Placement
-                        </button>
-                    </div>
+                    <button onclick="App.showPostJobForm()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition shadow-sm">
+                        <i class="fa-solid fa-plus mr-1"></i> Post Internship / Placement
+                    </button>
                 </div>
 
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
@@ -2256,17 +2240,12 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Trustless Skill-Verification Hub (Candidate Pool) -->
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
-                        <div>
-                            <h3 class="text-base font-bold text-slate-800 flex items-center">
-                                <i class="fa-solid fa-users text-amber-600 mr-2"></i> Verified Candidate Pool & Applications
-                            </h3>
-                            <p class="text-xs text-slate-500">Live PostgreSQL candidates fetched directly from backend database.</p>
-                        </div>
+                        <h3 class="text-base font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-users text-amber-600 mr-2"></i> Verified Candidate Pool & Applications
+                        </h3>
                         
-                        <!-- Blind Hiring Toggle -->
                         <div class="flex items-center space-x-2">
                             <span class="text-xs font-bold text-slate-600">Enable Unbiased (Blind) Hiring:</span>
                             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -2276,7 +2255,6 @@ const App = {
                         </div>
                     </div>
 
-                    <!-- Reverse-Search AI Querying -->
                     <div class="flex items-center space-x-2 mb-4">
                         <input type="text" id="aiCandidateSearch" value="${DB.aiSearchQuery}" placeholder="e.g. Find me students with ABC credits in AYUSH who know Pharmacovigilance..." class="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500">
                         <button onclick="App.filterCandidates()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition">
@@ -2290,7 +2268,7 @@ const App = {
                                 <div>
                                     <h4 class="font-bold text-slate-900 text-sm ${DB.isBlindHiring ? 'blur-text' : ''}">${s.name}</h4>
                                     <p class="text-xs text-slate-500 font-mono">
-                                        Target: ${s.targetRole || s.subDomain || 'Not Specified'} 
+                                        Target: ${s.targetRole || 'Not Specified'} 
                                         ${DB.isBlindHiring ? `| <strong class="text-emerald-700 ml-1">APAAR ID: ${s.apaarId}</strong>` : ''}
                                     </p>
                                     <div class="flex gap-1.5 mt-2">
