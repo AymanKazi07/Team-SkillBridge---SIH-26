@@ -6,7 +6,7 @@ const GlobalBackgroundEngine = {
     mouse: { x: -1000, y: -1000, targetX: -1000, targetY: -1000 },
     maxNodes: window.innerWidth < 768 ? 14 : 28,
 
-    init: function() {
+    init: function () {
         this.canvas = document.getElementById('bg-canvas');
         if (!this.canvas) return;
         this.ctx = this.canvas.getContext('2d');
@@ -44,13 +44,13 @@ const GlobalBackgroundEngine = {
         }
     },
 
-    resize: function() {
+    resize: function () {
         if (!this.canvas) return;
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
     },
 
-    animate: function() {
+    animate: function () {
         const self = GlobalBackgroundEngine;
         self.ctx.clearRect(0, 0, self.canvas.width, self.canvas.height);
 
@@ -99,7 +99,7 @@ const GlobalBackgroundEngine = {
     }
 };
 
-// ==================== IN-MEMORY DATABASE ====================
+// ==================== IN-MEMORY DATABASE & SQL SYNC ====================
 const DB = {
     users: [],
     courses: [],
@@ -110,70 +110,121 @@ const DB = {
     selectedJob: null,
     isBlindHiring: false,
     aiSearchQuery: '',
-    institutionalAlerts: [], // To store feedback loop alerts for Academicians
+    institutionalAlerts: [],
 
-    seed: function() {
-        if (this.users.length === 0) {
-            this.users = [
-                {
-                    id: 1,
-                    name: 'Aaditya Sharma',
-                    email: 'student@demo.com',
-                    password: 'demo123',
+    seed: async function () {
+        const defaultUsers = [
+            {
+                id: 1,
+                name: 'Aaditya Sharma',
+                email: 'student@demo.com',
+                password: 'demo123',
+                role: 'student',
+                apaarId: '8942-7712-4401',
+                apaarVerified: true,
+                domain: 'ayush',
+                subDomain: 'Ayurvedic Pharmacognosy & Dravyaguna',
+                targetRole: 'Senior Clinical AYUSH Researcher',
+                matchScore: 84,
+                skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance'],
+                projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
+                researchPapers: ['Standardization of Ashwagandha Withanolides (DOI: 10.1016/ayush.2025.04)'],
+                github: 'https://github.com/aaditya-ayush-research',
+                level: 'Advanced',
+                abcCredits: 28,
+                rejections: [],
+                assessment: {
+                    score: 88,
+                    level: 'Advanced (NHEQF Level 7)',
+                    repoAudit: 'Clean modular codebase, automated quality control scripts, standardized test fixtures.',
+                    researchWeight: 'High (Indexed in Scopus / UGC-CARE AYUSH Category)',
+                    gaps: ['Ayush GCP Regulatory Compliance', 'Bioinformatics docking tools'],
+                    suggestions: [
+                        'Complete ICMR/AYUSH Good Clinical Practice (GCP) Module',
+                        'Undertake molecular docking workflows for active phyto-compounds'
+                    ],
+                    roadmap: [
+                        { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
+                        { phase: 'Phase 2 (Month 3-4)', title: 'Bio-Analytical & Clinical Protocols', desc: 'Master HPLC/HPTLC fingerprinting, AYUSH GCP, and adverse drug reaction (ADR) reporting and pharmacovigilance protocols.' },
+                        { phase: 'Phase 3 (Month 5-6)', title: 'Industry Integration & Clinical Trials', desc: 'Undertake real-time clinical data compilation, stability testing, and Ministry compliance audits.' }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                name: 'Prof. (Dr.) V. K. Joshi',
+                email: 'academic@demo.com',
+                password: 'demo123',
+                role: 'academician',
+                institution: 'National Institute of Ayurveda / All India Council',
+                domain: 'ayush',
+                skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'],
+                courses: [1, 2]
+            },
+            {
+                id: 3,
+                name: 'Himalaya & Dabur Health R&D',
+                email: 'industry@demo.com',
+                password: 'demo123',
+                role: 'industrialist',
+                company: 'Dabur India R&D Labs',
+                domain: 'ayush',
+                skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling']
+            }
+        ];
+
+        // Fetch live candidates from FastAPI / PopSQL PostgreSQL backend
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/candidates");
+            if (res.ok) {
+                const liveCandidates = await res.json();
+                console.log("Synced live candidates from database:", liveCandidates);
+
+                const mappedSqlStudents = liveCandidates.map((c, idx) => ({
+                    id: 100 + (c.id || idx),
+                    name: c.name,
+                    email: `${c.name.toLowerCase().replace(/\s+/g, '.')}@demo.edu.in`,
+                    password: 'demo',
                     role: 'student',
-                    apaarId: '8942-7712-4401',
+                    apaarId: `8942-7712-${1000 + (c.id || idx)}`,
                     apaarVerified: true,
-                    domain: 'ayush',
-                    subDomain: 'Ayurvedic Pharmacognosy & Dravyaguna',
-                    targetRole: 'Senior Clinical AYUSH Researcher',
-                    matchScore: 84,
-                    skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance'],
-                    projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
-                    researchPapers: ['Standardization of Ashwagandha Withanolides (DOI: 10.1016/ayush.2025.04)'],
-                    github: 'https://github.com/aaditya-ayush-research',
+                    domain: c.ayush_enrolled ? 'ayush' : 'engineering',
+                    subDomain: c.department,
+                    targetRole: c.ayush_enrolled ? 'Clinical Researcher' : 'Systems Engineer',
+                    matchScore: Math.round(c.readiness_score || 85),
+                    skills: c.ayush_enrolled ? ['Standardization', 'Clinical Protocols'] : ['Full-Stack', 'System Architecture'],
+                    projects: ['SkillBridge Telemetry Integration'],
+                    researchPapers: [],
+                    github: 'https://github.com/aaditya-eng-systems',
                     level: 'Advanced',
-                    abcCredits: 28,
-                    rejections: [], // Track industry rejections dynamically
+                    abcCredits: 24,
+                    rejections: [],
                     assessment: {
-                        score: 88,
+                        score: Math.round(c.readiness_score || 85),
                         level: 'Advanced (NHEQF Level 7)',
-                        repoAudit: 'Clean modular codebase, automated quality control scripts, standardized test fixtures.',
-                        researchWeight: 'High (Indexed in Scopus / UGC-CARE AYUSH Category)',
-                        gaps: ['Ayush GCP Regulatory Compliance', 'Bioinformatics docking tools'],
-                        suggestions: [
-                            'Complete ICMR/AYUSH Good Clinical Practice (GCP) Module',
-                            'Undertake molecular docking workflows for active phyto-compounds'
-                        ],
+                        repoAudit: 'Database synchronized candidate record.',
+                        researchWeight: 'Verified Academic Standing',
+                        gaps: ['Microservices Integration'],
+                        suggestions: ['Complete NEP Capstone Verification'],
                         roadmap: [
-                            { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
-                            { phase: 'Phase 2 (Month 3-4)', title: 'Bio-Analytical & Clinical Protocols', desc: 'Master HPLC/HPTLC fingerprinting, AYUSH GCP, and adverse drug reaction (ADR) reporting and pharmacovigilance protocols.' },
-                            { phase: 'Phase 3 (Month 5-6)', title: 'Industry Integration & Clinical Trials', desc: 'Undertake real-time clinical data compilation, stability testing, and Ministry compliance audits.' }
+                            { phase: 'Phase 1', title: 'Curriculum Foundations', desc: 'Core engineering and domain modules.' }
                         ]
                     }
-                },
-                {
-                    id: 2,
-                    name: 'Prof. (Dr.) V. K. Joshi',
-                    email: 'academic@demo.com',
-                    password: 'demo123',
-                    role: 'academician',
-                    institution: 'National Institute of Ayurveda / All India Council',
-                    domain: 'ayush',
-                    skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'],
-                    courses: [1, 2]
-                },
-                {
-                    id: 3,
-                    name: 'Himalaya & Dabur Health R&D',
-                    email: 'industry@demo.com',
-                    password: 'demo123',
-                    role: 'industrialist',
-                    company: 'Dabur India R&D Labs',
-                    domain: 'ayush',
-                    skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling']
-                }
-            ];
+                }));
 
+                this.users = [
+                    ...defaultUsers.filter(u => u.role !== 'student'),
+                    ...mappedSqlStudents
+                ];
+            } else {
+                this.users = defaultUsers;
+            }
+        } catch (err) {
+            console.warn("FastAPI backend not active. Falling back to local data.", err);
+            this.users = defaultUsers;
+        }
+
+        if (this.courses.length === 0) {
             this.courses = [
                 {
                     id: 1,
@@ -205,7 +256,9 @@ const DB = {
                     certified: true
                 }
             ];
+        }
 
+        if (this.internships.length === 0) {
             this.internships = [
                 {
                     id: 1,
@@ -223,7 +276,9 @@ const DB = {
                     requirements: ['B.Pharm / M.Pharm or relevant AYUSH background', 'Familiarity with pharmacopoeial standards', 'Analytical mindset']
                 }
             ];
+        }
 
+        if (this.placements.length === 0) {
             this.placements = [
                 {
                     id: 1,
@@ -284,20 +339,20 @@ const AIEngine = {
         ]
     },
 
-    evaluateSubmission: function(payload) {
+    evaluateSubmission: function (payload) {
         const { domain, skills, projects, research, github, targetRole } = payload;
         let score = 40;
         let repoRemarks = domain === 'engineering'
-            ? (github && github.includes('github.com') 
-                ? "Verified Git Repo: Clean modular layout, active commit history, unit tests detected." 
+            ? (github && github.includes('github.com')
+                ? "Verified Git Repo: Clean modular layout, active commit history, unit tests detected."
                 : "No GitHub repository provided. Add a repository to earn code quality credits.")
             : "Domain Evaluation Completed: Academic portfolio & empirical publications verified.";
-        
+
         let researchWeight = "Baseline Academic Background";
 
         if (skills.length > 0) score += Math.min(skills.length * 7, 25);
         if (projects.length > 0) score += Math.min(projects.length * 10, 20);
-        
+
         if (domain === 'engineering' && github && github.includes('github.com')) {
             score += 8;
         } else if (domain !== 'engineering') {
@@ -345,7 +400,7 @@ const AIEngine = {
         };
     },
 
-    generateRoadmap: function(domain, level) {
+    generateRoadmap: function (domain, level) {
         if (domain === 'ayush') {
             return [
                 { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
@@ -362,15 +417,15 @@ const AIEngine = {
 };
 
 const App = {
-    init: function() {
-        DB.seed();
+    init: async function () {
+        await DB.seed();
         DB.currentUser = null;
         DB.activeStudentTab = 'overview';
         GlobalBackgroundEngine.init();
         this.render();
     },
 
-    render: function() {
+    render: function () {
         const app = document.getElementById('app');
         if (DB.currentUser) {
             this.renderDashboard(app);
@@ -379,13 +434,13 @@ const App = {
         }
     },
 
-    setStudentTab: function(tabName) {
+    setStudentTab: function (tabName) {
         DB.activeStudentTab = tabName;
-        DB.selectedJob = null; 
+        DB.selectedJob = null;
         this.render();
     },
 
-    showToast: function(message, type = 'info') {
+    showToast: function (message, type = 'info') {
         const container = document.getElementById('toast-container');
         if (!container) return;
         const toast = document.createElement('div');
@@ -404,7 +459,7 @@ const App = {
         }, 3000);
     },
 
-    getCloseButton: function(onClickHandler = "App.render()") {
+    getCloseButton: function (onClickHandler = "App.render()") {
         return `
             <button onclick="${onClickHandler}" aria-label="Close" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition shadow-sm z-20">
                 <i class="fa-solid fa-xmark text-base"></i>
@@ -412,7 +467,7 @@ const App = {
         `;
     },
 
-    getLogoHtml: function(size = 'normal') {
+    getLogoHtml: function (size = 'normal') {
         const iconSize = size === 'large' ? 'w-12 h-12' : 'w-10 h-10';
         const textClass = size === 'large' ? 'text-3xl' : 'text-2xl';
         return `
@@ -434,7 +489,7 @@ const App = {
         `;
     },
 
-    renderGovBanner: function() {
+    renderGovBanner: function () {
         return `
             <div class="bg-slate-900/90 backdrop-blur-md text-slate-300 text-xs border-b border-slate-800 py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center z-50 relative">
                 <div class="flex items-center space-x-3">
@@ -453,7 +508,7 @@ const App = {
         `;
     },
 
-    renderLanding: function(app) {
+    renderLanding: function (app) {
         app.innerHTML = `
             <div class="min-h-screen text-slate-800 flex flex-col justify-between">
                 ${this.renderGovBanner()}
@@ -572,7 +627,7 @@ const App = {
         `;
     },
 
-    showLogin: function(role) {
+    showLogin: function (role) {
         const app = document.getElementById('app');
         const roleConfig = {
             student: { title: 'Student & Researcher Login', icon: 'fa-user-graduate', color: 'blue', demo: 'student@demo.com' },
@@ -620,7 +675,7 @@ const App = {
         `;
     },
 
-    showRegister: function(role) {
+    showRegister: function (role) {
         const app = document.getElementById('app');
         let extraFields = '';
 
@@ -681,7 +736,7 @@ const App = {
         `;
     },
 
-    handleLogin: function(e, role) {
+    handleLogin: function (e, role) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
@@ -697,7 +752,7 @@ const App = {
         }
     },
 
-    handleRegister: function(e, role) {
+    handleRegister: function (e, role) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
@@ -734,13 +789,13 @@ const App = {
         this.render();
     },
 
-    logout: function() {
+    logout: function () {
         DB.currentUser = null;
         this.showToast('Logged out successfully.', 'info');
         this.render();
     },
 
-    renderDashboard: function(app) {
+    renderDashboard: function (app) {
         const user = DB.currentUser;
         let dashboardHtml = '';
 
@@ -779,7 +834,7 @@ const App = {
         `;
     },
 
-    renderStudentView: function(user) {
+    renderStudentView: function (user) {
         if (!user.domain || !user.assessment) {
             return this.renderStudentOnboardingForm(user);
         }
@@ -790,8 +845,8 @@ const App = {
 
         const currentTab = DB.activeStudentTab || 'overview';
 
-        const tabBtnStyle = (tab) => currentTab === tab 
-            ? 'bg-blue-600 text-white font-semibold shadow-sm' 
+        const tabBtnStyle = (tab) => currentTab === tab
+            ? 'bg-blue-600 text-white font-semibold shadow-sm'
             : 'bg-white/70 hover:bg-slate-100 text-slate-600 font-medium border border-slate-200';
 
         return `
@@ -869,8 +924,7 @@ const App = {
         `;
     },
 
-    renderStudentOverviewTab: function(user) {
-        // Build the Rejection / Feedback Loop HTML if the student has been rejected
+    renderStudentOverviewTab: function (user) {
         const rejectionsHtml = (user.rejections && user.rejections.length > 0) ? `
             <div class="lg:col-span-3 glass-card rounded-xl shadow-sm border border-rose-200 p-6 space-y-4 mt-2">
                 <div class="flex justify-between items-center border-b border-rose-100 pb-3">
@@ -971,9 +1025,9 @@ const App = {
         `;
     },
 
-    renderStudentCoursesTab: function(user) {
+    renderStudentCoursesTab: function (user) {
         const domainCourses = DB.courses.filter(c => c.domain === user.domain || c.domain === 'engineering');
-        
+
         return `
             <div class="space-y-6">
                 <div class="grid sm:grid-cols-3 gap-4">
@@ -1057,7 +1111,7 @@ const App = {
         `;
     },
 
-    renderStudentGithubTab: function(user) {
+    renderStudentGithubTab: function (user) {
         return `
             <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -1100,7 +1154,7 @@ const App = {
         `;
     },
 
-    renderStudentInterviewTab: function(user) {
+    renderStudentInterviewTab: function (user) {
         const domainQuestions = INTERVIEW_QUESTIONS_BANK[user.domain] || INTERVIEW_QUESTIONS_BANK.ayush;
 
         return `
@@ -1244,7 +1298,7 @@ const App = {
                                     <div class="p-3.5 bg-white/80 rounded-xl border border-slate-200 space-y-2 card-hover">
                                         <div class="flex justify-between items-start">
                                             <span class="text-xs font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">Question ${idx + 1}</span>
-                                            <button onclick="App.showToast('Generating AI feedback for Q${idx+1} (Match score: ${user.matchScore || 88}%)...', 'info')" class="text-[11px] font-bold text-emerald-700 hover:underline">
+                                            <button onclick="App.showToast('Generating AI feedback for Q${idx + 1} (Match score: ${user.matchScore || 88}%)...', 'info')" class="text-[11px] font-bold text-emerald-700 hover:underline">
                                                 <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> AI Feedback (${user.matchScore || 88}% Match)
                                             </button>
                                         </div>
@@ -1260,11 +1314,11 @@ const App = {
         `;
     },
 
-    showPopupAiStandout: function() {
+    showPopupAiStandout: function () {
         this.showToast('AI Tip: Use STAR method and cite your APAAR verified credentials to stand out by 35%!', 'success');
     },
 
-    renderStudentResumeTab: function(user) {
+    renderStudentResumeTab: function (user) {
         return `
             <div class="space-y-6">
                 <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white rounded-2xl p-6 shadow-lg flex flex-wrap justify-between items-center gap-4">
@@ -1374,7 +1428,7 @@ const App = {
         `;
     },
 
-    handleResumeUpload: function(e) {
+    handleResumeUpload: function (e) {
         const file = e.target.files[0];
         if (file) {
             this.showToast(`Successfully uploaded "${file.name}"! AI parsing initiated.`, 'success');
@@ -1386,7 +1440,7 @@ const App = {
         }
     },
 
-    runAiResumeAudit: function() {
+    runAiResumeAudit: function () {
         this.showToast('Running AI keyword & ATS compatibility analysis...', 'info');
         setTimeout(() => {
             const feedbackBox = document.getElementById('ai-resume-feedback-box');
@@ -1395,7 +1449,7 @@ const App = {
         }, 800);
     },
 
-    runAiMakeChanges: function() {
+    runAiMakeChanges: function () {
         this.showToast('Applying AI structural enhancements and formatting fixes...', 'info');
         setTimeout(() => {
             const feedbackBox = document.getElementById('ai-resume-feedback-box');
@@ -1404,7 +1458,7 @@ const App = {
         }, 1000);
     },
 
-    renderStudentOpportunitiesTab: function(user) {
+    renderStudentOpportunitiesTab: function (user) {
         const domainInternships = DB.internships.filter(i => i.domain === user.domain || i.domain === 'engineering');
         const domainPlacements = DB.placements.filter(p => p.domain === user.domain || p.domain === 'engineering');
         const selectedJob = DB.selectedJob;
@@ -1490,7 +1544,7 @@ const App = {
         `;
     },
 
-    selectJob: function(type, id) {
+    selectJob: function (type, id) {
         const list = type === 'internship' ? DB.internships : DB.placements;
         const job = list.find(item => item.id === id);
         if (job) {
@@ -1500,7 +1554,7 @@ const App = {
         }
     },
 
-    renderJobDetailModal: function(job, user) {
+    renderJobDetailModal: function (job, user) {
         const matchPct = user.matchScore || 88;
         return `
             <div class="glass-card rounded-2xl shadow-2xl border-2 border-blue-500 p-6 space-y-6 relative animate-fadeIn">
@@ -1549,20 +1603,20 @@ const App = {
         `;
     },
 
-    applyOpportunity: function(type, title) {
+    applyOpportunity: function (type, title) {
         this.showToast(`Successfully applied to ${title} using APAAR profile!`, 'success');
         DB.selectedJob = null;
         this.render();
     },
 
-    verifyGithubRepo: function() {
+    verifyGithubRepo: function () {
         this.showToast('Triggering GitHub AST inspection engine...', 'info');
         setTimeout(() => {
             this.showToast('Git audit completed! Repository static analysis verified.', 'success');
         }, 1200);
     },
 
-    renderStudentOnboardingForm: function(user) {
+    renderStudentOnboardingForm: function (user) {
         const currentDomain = user.domain || 'ayush';
         const preset = DOMAIN_PRESETS[currentDomain] || DOMAIN_PRESETS.ayush;
 
@@ -1641,12 +1695,12 @@ const App = {
         `;
     },
 
-    getQuestionHtmlForDomain: function(domain) {
+    getQuestionHtmlForDomain: function (domain) {
         const questions = AIEngine.questionBank[domain] || AIEngine.questionBank.ayush;
         return questions[0].q;
     },
 
-    handleDomainChange: function(domain) {
+    handleDomainChange: function (domain) {
         const preset = DOMAIN_PRESETS[domain] || DOMAIN_PRESETS.ayush;
         document.getElementById('formSubDomain').value = preset.subDomain;
         document.getElementById('formTargetRole').value = preset.targetRole;
@@ -1657,7 +1711,7 @@ const App = {
         document.getElementById('dynamicQuestionText').innerText = this.getQuestionHtmlForDomain(domain);
     },
 
-    saveStudentProfile: function(e) {
+    saveStudentProfile: function (e) {
         e.preventDefault();
         const user = DB.currentUser;
         user.domain = document.getElementById('formDomain').value;
@@ -1686,12 +1740,12 @@ const App = {
         this.render();
     },
 
-    showRetakeAssessment: function() {
+    showRetakeAssessment: function () {
         DB.currentUser.assessment = null;
         this.render();
     },
 
-    startCourseQuiz: function(courseId) {
+    startCourseQuiz: function (courseId) {
         const course = DB.courses.find(c => c.id === courseId);
         if (!course || !course.quiz) return;
 
@@ -1727,7 +1781,7 @@ const App = {
         `;
     },
 
-    submitCourseQuiz: function(e, courseId) {
+    submitCourseQuiz: function (e, courseId) {
         e.preventDefault();
         const course = DB.courses.find(c => c.id === courseId);
         DB.currentUser.abcCredits = (DB.currentUser.abcCredits || 24) + course.nepCredits;
@@ -1735,7 +1789,7 @@ const App = {
         this.render();
     },
 
-    showPublishCourseForm: function() {
+    showPublishCourseForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
             <div class="min-h-screen flex flex-col justify-center items-center p-4 relative">
@@ -1772,7 +1826,7 @@ const App = {
         `;
     },
 
-    handlePublishCourse: function(e) {
+    handlePublishCourse: function (e) {
         e.preventDefault();
         const newCourse = {
             id: DB.courses.length + 1,
@@ -1793,45 +1847,41 @@ const App = {
     },
 
     // ==================== NEW SIH UPGRADES: ACADEMICIAN HELPERS ====================
-    runSyllabusAudit: function() {
+    runSyllabusAudit: function () {
         this.showToast('AI Syllabus Engine analyzing industry trends...', 'info');
         setTimeout(() => {
-            const domainKey = DB.currentUser.domain || 'engineering';
-            const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
-
             const reportDiv = document.getElementById('syllabusAuditReport');
-            reportDiv.classList.remove('hidden');
-            reportDiv.innerHTML = `
-                <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl text-xs space-y-2">
-                    <p><strong><i class="fa-solid fa-triangle-exclamation mr-1"></i> Industry Alignment Warning:</strong> ${analytics.syllabusAudit.warning}</p>
-                    <p class="text-emerald-700 font-semibold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Suggestion: ${analytics.syllabusAudit.suggestion}</p>
-                </div>
-            `;
+            if (reportDiv) {
+                reportDiv.classList.remove('hidden');
+                reportDiv.innerHTML = `
+                    <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl text-xs space-y-2">
+                        <p><strong><i class="fa-solid fa-triangle-exclamation mr-1"></i> Industry Alignment Warning:</strong> Curriculum contains < 10% Cloud Microservices / Real-time Telemetry modules.</p>
+                        <p class="text-emerald-700 font-semibold"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Suggestion: Introduce 4-credit Capstone focused on Vector Search & Microservices.</p>
+                    </div>
+                `;
+            }
             this.showToast('Curriculum alignment gap detected.', 'success');
         }, 1500);
     },
 
-    mintAbcCredits: function(studentId) {
+    mintAbcCredits: function (studentId) {
         this.showToast(`<i class="fa-solid fa-link"></i> Securing via Blockchain Hash: 0x${Math.random().toString(16).substr(2, 8).toUpperCase()}...`, 'info');
         setTimeout(() => {
             this.showToast('Credits successfully minted and pushed to Government Academic Bank of Credits (ABC)!', 'success');
         }, 1200);
     },
 
-    renderInstitutionalChart: function() {
+    renderInstitutionalChart: function () {
         const ctx = document.getElementById('skillGapChart');
         if (!ctx) return;
-
-        const domainKey = DB.currentUser.domain || 'engineering';
-        const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
 
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: analytics.chart.labels,
+                labels: ['System Design', 'Microservices', 'HPLC Profiling', 'CI/CD Pipelines'],
                 datasets: [{
                     label: '% of Students Failing AI Mock Interviews',
-                    data: analytics.chart.data,
+                    data: [68, 54, 42, 38],
                     backgroundColor: ['#e11d48', '#f59e0b', '#10b981', '#3b82f6'],
                     borderRadius: 4
                 }]
@@ -1844,14 +1894,10 @@ const App = {
         });
     },
 
-    renderAcademicianView: function(user) {
+    renderAcademicianView: function (user) {
         const myCourses = DB.courses.filter(c => c.author === user.name);
         const otherCourses = DB.courses.filter(c => c.author !== user.name);
-        
-        const domainKey = user.domain || 'engineering';
-        const analytics = DOMAIN_ANALYTICS[domainKey] || DOMAIN_ANALYTICS['engineering'];
 
-        // Schedule chart rendering since the canvas is created in this string
         setTimeout(() => App.renderInstitutionalChart(), 50);
 
         return `
@@ -1867,7 +1913,6 @@ const App = {
                     </button>
                 </div>
 
-                <!-- Feedback Loop / Institutional Alerts -->
                 ${DB.institutionalAlerts.length > 0 ? `
                     <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 shadow-sm space-y-2">
                         <h3 class="text-sm font-bold text-rose-800"><i class="fa-solid fa-bell mr-2"></i> Recruiter Feedback Alerts (Action Required)</h3>
@@ -1881,14 +1926,13 @@ const App = {
                     </div>
                 ` : ''}
 
-                <!-- AI Syllabus Auditor & Skill-Gap Analytics -->
                 <div class="grid lg:grid-cols-2 gap-6">
                     <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-wand-magic-sparkles text-emerald-600 mr-2"></i> AI Syllabus Auditor
                         </h3>
                         <p class="text-xs text-slate-500">Paste your course syllabus below to identify gaps against active recruiter demands.</p>
-                        <textarea rows="4" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="${analytics.syllabusAudit.placeholder}"></textarea>
+                        <textarea rows="4" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500" placeholder="Paste department curriculum units here..."></textarea>
                         <button onclick="App.runSyllabusAudit()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-lg transition shadow-sm">
                             Audit against Industry Demands
                         </button>
@@ -1899,7 +1943,7 @@ const App = {
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-chart-bar text-blue-600 mr-2"></i> Institutional Skill-Gap Analytics
                         </h3>
-                        <p class="text-xs text-slate-500">Macro-view telemetry based on PICT students failing AI mock interviews.</p>
+                        <p class="text-xs text-slate-500">Macro-view telemetry based on students failing AI mock interviews.</p>
                         <canvas id="skillGapChart" class="w-full h-40"></canvas>
                     </div>
                 </div>
@@ -1971,7 +2015,7 @@ const App = {
     },
 
     // ==================== NEW SIH UPGRADES: INDUSTRIALIST HELPERS ====================
-    toggleNapsCard: function() {
+    toggleNapsCard: function () {
         const checkbox = document.getElementById('napsCompliant');
         const card = document.getElementById('napsCalcCard');
         if (!checkbox || !card) return;
@@ -1979,7 +2023,6 @@ const App = {
         if (checkbox.checked) {
             card.classList.remove('hidden');
             const salaryInput = document.getElementById('jobSalary').value;
-            // Basic extraction of numbers for demo purposes
             const amount = parseInt(salaryInput.replace(/[^0-9]/g, '')) || 10000;
             const govtShare = (amount * 0.25).toLocaleString();
             document.getElementById('napsGovtShare').innerText = `₹${govtShare}`;
@@ -1988,25 +2031,24 @@ const App = {
         }
     },
 
-    toggleBlindHiring: function() {
+    toggleBlindHiring: function () {
         DB.isBlindHiring = !DB.isBlindHiring;
         this.render();
         this.showToast(DB.isBlindHiring ? 'Blind Hiring Mode Enabled: Names hidden to prevent bias.' : 'Blind Hiring Mode Disabled.', 'info');
     },
 
-    filterCandidates: function() {
+    filterCandidates: function () {
         const query = document.getElementById('aiCandidateSearch').value.toLowerCase();
         DB.aiSearchQuery = query;
         this.render();
         this.showToast('AI Filter Applied to Candidate Pool', 'success');
     },
 
-    logMissingSkill: function(studentId) {
+    logMissingSkill: function (studentId) {
         const skill = prompt("Enter the critical skill this candidate lacked (e.g., Cloud Architecture, Pharmacovigilance):");
         if (skill && skill.trim() !== "") {
             const student = DB.users.find(u => u.id === studentId);
             if (student) {
-                // Feedback Loop to Student - REJECTION LOGGING
                 student.rejections = student.rejections || [];
                 student.rejections.push({
                     company: DB.currentUser.company,
@@ -2014,17 +2056,16 @@ const App = {
                     date: new Date().toLocaleDateString()
                 });
 
-                // Update AI Gaps and Roadmap for the student
                 if (student.assessment) {
                     if (student.assessment.gaps && !student.assessment.gaps.includes(skill)) {
                         student.assessment.gaps.push(skill);
                     } else if (!student.assessment.gaps) {
                         student.assessment.gaps = [skill];
                     }
-                    
+
                     if (!student.assessment.suggestions) student.assessment.suggestions = [];
                     student.assessment.suggestions.push(`Enroll in NEP-accredited module for ${skill} (Based on Industry Feedback)`);
-                    
+
                     if (!student.assessment.roadmap) student.assessment.roadmap = [];
                     student.assessment.roadmap.push({
                         phase: 'Industry Feedback Recovery',
@@ -2032,8 +2073,7 @@ const App = {
                         desc: `A customized AI learning path to acquire ${skill} based on recent recruiter rejection feedback from ${DB.currentUser.company}.`
                     });
                 }
-                
-                // Feedback Loop to Academician Dashboard
+
                 DB.institutionalAlerts.push({
                     company: DB.currentUser.company,
                     skill: skill
@@ -2045,7 +2085,7 @@ const App = {
         }
     },
 
-    showPostJobForm: function() {
+    showPostJobForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
             <div class="min-h-screen flex flex-col justify-center items-center p-4 relative">
@@ -2079,7 +2119,6 @@ const App = {
                             <input type="text" id="jobSalary" required onkeyup="App.toggleNapsCard()" class="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg">
                         </div>
                         
-                        <!-- NAPS 2.0 Compliance -->
                         <div class="flex items-center space-x-2">
                             <input type="checkbox" id="napsCompliant" onchange="App.toggleNapsCard()" class="w-4 h-4 text-emerald-600">
                             <label class="text-xs font-bold text-slate-700">NAPS 2.0 Compliant (Govt Apprenticeship)</label>
@@ -2100,7 +2139,7 @@ const App = {
         `;
     },
 
-    handlePostJob: function(e) {
+    handlePostJob: function (e) {
         e.preventDefault();
         const type = document.getElementById('jobType').value;
         const newJob = {
@@ -2125,9 +2164,9 @@ const App = {
         this.render();
     },
 
-    deleteJob: function(type, id) {
-        if(confirm("Are you sure you want to delete this opportunity?")) {
-            if(type === 'internship') {
+    deleteJob: function (type, id) {
+        if (confirm("Are you sure you want to delete this opportunity?")) {
+            if (type === 'internship') {
                 DB.internships = DB.internships.filter(job => job.id !== id);
             } else {
                 DB.placements = DB.placements.filter(job => job.id !== id);
@@ -2137,20 +2176,18 @@ const App = {
         }
     },
 
-    renderIndustrialistView: function(user) {
+    renderIndustrialistView: function (user) {
         const myInternships = DB.internships.filter(i => i.company === user.company);
         const myPlacements = DB.placements.filter(p => p.company === user.company);
 
-        // Filter students to EXCLUDE those who have been rejected by this specific company
         let candidatePool = DB.users.filter(u => {
             if (u.role !== 'student') return false;
             if (!u.rejections) return true;
             return !u.rejections.some(r => r.company === user.company);
         });
 
-        // Filter based on AI Search Query
         if (DB.aiSearchQuery) {
-            candidatePool = candidatePool.filter(u => 
+            candidatePool = candidatePool.filter(u =>
                 (u.skills && u.skills.join(' ').toLowerCase().includes(DB.aiSearchQuery)) ||
                 (u.domain && u.domain.toLowerCase().includes(DB.aiSearchQuery))
             );
@@ -2203,14 +2240,12 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Trustless Skill-Verification Hub (Candidate Pool) -->
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-users text-amber-600 mr-2"></i> Verified Candidate Pool & Applications
                         </h3>
                         
-                        <!-- Blind Hiring Toggle -->
                         <div class="flex items-center space-x-2">
                             <span class="text-xs font-bold text-slate-600">Enable Unbiased (Blind) Hiring:</span>
                             <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
@@ -2220,7 +2255,6 @@ const App = {
                         </div>
                     </div>
 
-                    <!-- Reverse-Search AI Querying -->
                     <div class="flex items-center space-x-2 mb-4">
                         <input type="text" id="aiCandidateSearch" value="${DB.aiSearchQuery}" placeholder="e.g. Find me students with ABC credits in AYUSH who know Pharmacovigilance..." class="w-full px-4 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500">
                         <button onclick="App.filterCandidates()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm whitespace-nowrap transition">
@@ -2232,7 +2266,6 @@ const App = {
                         ${candidatePool.map(s => `
                             <div class="p-4 bg-white/80 rounded-xl border border-slate-200 flex flex-wrap justify-between items-center gap-4">
                                 <div>
-                                    <!-- Applies blur class if Blind Hiring is true -->
                                     <h4 class="font-bold text-slate-900 text-sm ${DB.isBlindHiring ? 'blur-text' : ''}">${s.name}</h4>
                                     <p class="text-xs text-slate-500 font-mono">
                                         Target: ${s.targetRole || 'Not Specified'} 
@@ -2247,7 +2280,6 @@ const App = {
                                         <span class="text-sm font-bold text-indigo-700">${s.matchScore || s.assessment?.score || 85}% Match</span>
                                         <span class="block text-[10px] text-emerald-700 font-semibold">APAAR Verified</span>
                                     </div>
-                                    <!-- Feedback Loop Trigger -->
                                     <button onclick="App.logMissingSkill(${s.id})" class="text-[10px] border border-rose-300 text-rose-700 hover:bg-rose-50 px-2 py-1 rounded font-bold transition shadow-sm">
                                         <i class="fa-solid fa-xmark mr-1"></i> Reject & Log Skill Gap
                                     </button>
