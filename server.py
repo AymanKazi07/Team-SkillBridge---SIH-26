@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
@@ -95,6 +95,21 @@ def init_db():
             );
         """)
 
+        # 4. Test Submissions Table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS test_submissions (
+                id SERIAL PRIMARY KEY,
+                student_id INT NOT NULL,
+                course_id INT NOT NULL,
+                test_title VARCHAR(255) NOT NULL,
+                score_percent INT NOT NULL,
+                correct_count INT NOT NULL,
+                total_count INT NOT NULL,
+                compliment TEXT NOT NULL,
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
         # Seed Default Users if empty
         cursor.execute("SELECT COUNT(*) FROM users;")
         if cursor.fetchone()[0] == 0:
@@ -126,15 +141,15 @@ def init_db():
             cursor.execute("""
                 INSERT INTO jobs (type, company, title, domain, location, stipend_salary, duration, description, skills, requirements)
                 VALUES 
-                ('internship', 'Dabur India R&D Labs', 'Ayush Phytopharmacy Intern', 'ayush', 'New Delhi / Hybrid', '₹30,000 / month', '6 Months', 'Standardize herbal extracts using HPTLC and spectrophotometry.', 'Herb Standardization, HPLC/GC-MS, AYUSH GCP', 'B.Pharm / M.Pharm or relevant background'),
-                ('placement', 'Patanjali & Himalaya Health', 'Senior AYUSH Regulatory Associate', 'ayush', 'Haridwar / New Delhi', '₹14.5 LPA', 'Full-time', 'Lead compliance audits and clinical trial documentation.', 'Pharmacovigilance, Standardization, Clinical Trials', 'Post-graduate degree in AYUSH or clinical research');
+                ('internship', 'Dabur India R&D Labs', 'Ayush Phytopharmacy Intern', 'ayush', 'New Delhi / Hybrid', 'Rs. 30,000 / month', '6 Months', 'Standardize herbal extracts using HPTLC and spectrophotometry.', 'Herb Standardization, HPLC/GC-MS, AYUSH GCP', 'B.Pharm / M.Pharm or relevant background'),
+                ('placement', 'Patanjali & Himalaya Health', 'Senior AYUSH Regulatory Associate', 'ayush', 'Haridwar / New Delhi', 'Rs. 14.5 LPA', 'Full-time', 'Lead compliance audits and clinical trial documentation.', 'Pharmacovigilance, Standardization, Clinical Trials', 'Post-graduate degree in AYUSH or clinical research');
             """)
 
         conn.commit()
         cursor.close()
-        print("✅ Database tables successfully verified & initialized.")
+        print("[SUCCESS] Database tables successfully verified & initialized.")
     except Exception as e:
-        print(f"⚠️ [Database Init Error]: {e}")
+        print(f"[Database Init Error]: {e}")
     finally:
         if conn:
             conn.close()
@@ -158,17 +173,17 @@ class LoginRequest(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     id: int
-    domain: str
-    subDomain: str
-    targetRole: str
-    apaarId: str
+    domain: Optional[str] = ""
+    subDomain: Optional[str] = ""
+    targetRole: Optional[str] = ""
+    apaarId: Optional[str] = ""
     github: Optional[str] = ""
-    skills: List[str]
-    projects: List[str]
-    researchPapers: List[str]
-    matchScore: int
-    level: str
-    assessment: dict
+    skills: List[str] = []
+    projects: List[str] = []
+    researchPapers: List[str] = []
+    matchScore: Optional[int] = 85
+    level: Optional[str] = ""
+    assessment: Optional[Dict[str, Any]] = {}
 
 class CourseCreateRequest(BaseModel):
     title: str
@@ -197,9 +212,11 @@ class AddCreditsRequest(BaseModel):
 
 @app.post("/api/register")
 def register_user(req: RegisterRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("SELECT id FROM users WHERE LOWER(email) = LOWER(%s);", (req.email,))
         if cursor.fetchone():
             raise HTTPException(status_code=400, detail="An account with this email already exists.")
@@ -216,17 +233,22 @@ def register_user(req: RegisterRequest):
     except HTTPException as he:
         raise he
     except Exception as e:
-        conn.rollback()
+        if conn:
+            conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.post("/api/login")
 def login_user(req: LoginRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT id, name, email, role, apaar_id, domain, sub_domain, target_role, 
                    match_score, skills, projects, research_papers, github, level, abc_credits, 
@@ -256,18 +278,26 @@ def login_user(req: LoginRequest):
             user["researchPapers"] = []
 
         return {"success": True, "user": user}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.put("/api/student/profile")
 def update_student_profile(req: ProfileUpdateRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
-        skills_str = ", ".join(req.skills)
-        projects_str = ", ".join(req.projects)
-        research_str = ", ".join(req.researchPapers)
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        skills_str = ", ".join(req.skills) if req.skills else ""
+        projects_str = ", ".join(req.projects) if req.projects else ""
+        research_str = ", ".join(req.researchPapers) if req.researchPapers else ""
 
         cursor.execute("""
             UPDATE users SET 
@@ -278,19 +308,27 @@ def update_student_profile(req: ProfileUpdateRequest):
         """, (
             req.domain, req.subDomain, req.targetRole, req.apaarId,
             req.github, skills_str, projects_str, research_str,
-            req.matchScore, req.level, json.dumps(req.assessment), req.id
+            req.matchScore, req.level, json.dumps(req.assessment) if req.assessment else "{}", req.id
         ))
         conn.commit()
         return {"success": True, "message": "Profile updated in PostgreSQL."}
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.get("/api/candidates")
 def get_candidates():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             SELECT id, name, domain as department, match_score as readiness_score, 
                    (domain = 'ayush') as ayush_enrolled, skills, target_role, apaar_id
@@ -299,26 +337,38 @@ def get_candidates():
         """)
         candidates = cursor.fetchall()
         return candidates
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.get("/api/courses")
 def get_courses():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("SELECT id, title, author, domain, level, nep_credits as \"nepCredits\", deadline, description, quiz FROM courses ORDER BY id DESC;")
         return cursor.fetchall()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.post("/api/courses")
 def create_course(c: CourseCreateRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         default_quiz = json.dumps([
             {"q": f"Assessment for {c.title}", "options": ["Correct Option", "Alternative Option"], "answer": 0}
         ])
@@ -330,15 +380,23 @@ def create_course(c: CourseCreateRequest):
         new_course = cursor.fetchone()
         conn.commit()
         return {"success": True, "course": new_course}
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.get("/api/jobs")
 def get_jobs():
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("SELECT id, type, company, title, domain, location, stipend_salary as stipend, stipend_salary as salary, duration, description, skills, requirements FROM jobs ORDER BY id DESC;")
         jobs = cursor.fetchall()
         for j in jobs:
@@ -347,15 +405,21 @@ def get_jobs():
             if isinstance(j.get("requirements"), str):
                 j["requirements"] = [r.strip() for r in j["requirements"].split(",") if r.strip()]
         return jobs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.post("/api/jobs")
 def create_job(j: JobCreateRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         cursor.execute("""
             INSERT INTO jobs (type, title, domain, location, stipend_salary, description, company, skills, requirements)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -364,33 +428,55 @@ def create_job(j: JobCreateRequest):
         new_job = cursor.fetchone()
         conn.commit()
         return {"success": True, "job": new_job}
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.delete("/api/jobs/{job_id}")
 def delete_job(job_id: int):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("DELETE FROM jobs WHERE id = %s;", (job_id,))
         conn.commit()
         return {"success": True, "message": "Job deleted"}
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 @app.post("/api/student/credits")
 def add_credits(req: AddCreditsRequest):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute("UPDATE users SET abc_credits = abc_credits + %s WHERE id = %s;", (req.credits, req.studentId))
         conn.commit()
         return {"success": True, "message": "Credits updated in PostgreSQL"}
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 if __name__ == "__main__":
     import uvicorn
