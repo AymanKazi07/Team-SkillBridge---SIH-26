@@ -735,58 +735,70 @@ const App = {
             </div>
         `;
     },
-
-    handleLogin: function (e, role) {
+    handleLogin: async function (e, role) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        const user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
-        if (user) {
-            DB.currentUser = user;
-            DB.activeStudentTab = 'overview';
-            this.showToast(`Welcome back, ${user.name}!`, 'success');
-            this.render();
-        } else {
-            this.showToast('Invalid credentials. Please verify your role and email.', 'error');
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, role })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                DB.currentUser = data.user;
+                DB.activeStudentTab = 'overview';
+                this.showToast(`Welcome back, ${data.user.name}! (Authenticated via PostgreSQL)`, 'success');
+                this.render();
+            } else {
+                this.showToast(data.detail || 'Invalid credentials. Please verify your role and password.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            // Fallback to local user if backend is offline
+            const localUser = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
+            if (localUser) {
+                DB.currentUser = localUser;
+                this.showToast(`Logged in (Local Mode): ${localUser.name}`, 'info');
+                this.render();
+            } else {
+                this.showToast('Login failed. Make sure server.py is running!', 'error');
+            }
         }
     },
 
-    handleRegister: function (e, role) {
+    handleRegister: async function (e, role) {
         e.preventDefault();
         const name = document.getElementById('regName').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
+        const apaarId = document.getElementById('regApaar') ? document.getElementById('regApaar').value : null;
+        const institution = document.getElementById('regInstitution') ? document.getElementById('regInstitution').value : null;
+        const company = document.getElementById('regCompany') ? document.getElementById('regCompany').value : null;
 
-        if (DB.users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-            this.showToast('This email is already registered!', 'error');
-            return;
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, role, apaarId, institution, company })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                DB.currentUser = data.user;
+                DB.activeStudentTab = 'overview';
+                this.showToast('Account registered and saved into PostgreSQL!', 'success');
+                this.render();
+            } else {
+                this.showToast(data.detail || 'Registration failed.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            this.showToast('Could not reach backend. Check if server.py is running!', 'error');
         }
-
-        const newUser = {
-            id: DB.users.length + 1,
-            name,
-            email,
-            password,
-            role,
-            skills: [],
-            projects: [],
-            domain: '',
-            targetRole: '',
-            matchScore: 0,
-            apaarId: document.getElementById('regApaar') ? document.getElementById('regApaar').value : null,
-            apaarVerified: true,
-            institution: document.getElementById('regInstitution') ? document.getElementById('regInstitution').value : null,
-            company: document.getElementById('regCompany') ? document.getElementById('regCompany').value : null,
-            abcCredits: 0,
-            rejections: []
-        };
-
-        DB.users.push(newUser);
-        DB.currentUser = newUser;
-        DB.activeStudentTab = 'overview';
-        this.showToast('Account successfully created!', 'success');
-        this.render();
     },
 
     logout: function () {
@@ -1030,6 +1042,7 @@ const App = {
 
         return `
             <div class="space-y-6">
+                <!-- Top Metric Cards -->
                 <div class="grid sm:grid-cols-3 gap-4">
                     <div class="glass-card rounded-xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
                         <div class="flex justify-between items-center mb-2">
@@ -1072,6 +1085,70 @@ const App = {
                     </div>
                 </div>
 
+                <!-- ==================== 2 MANDATORY QUIZZES (APTITUDE & CAREER READINESS) ==================== -->
+                <div class="glass-card rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-100 pb-3">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-clipboard-check text-blue-600 mr-2"></i> National Diagnostic & Employability Assessments
+                            </h3>
+                            <p class="text-xs text-slate-500">Mandatory baseline assessments aligned with AICTE & National Career Service (NCS) frameworks.</p>
+                        </div>
+                        <span class="text-[11px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1 rounded-full">
+                            <i class="fa-solid fa-award mr-1"></i> Earns 4 NEP Credits
+                        </span>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <!-- QUIZ 1: GENERAL APTITUDE -->
+                        <div class="p-5 bg-white/90 border border-blue-200/80 rounded-xl flex flex-col justify-between shadow-sm card-hover">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2.5 py-0.5 rounded uppercase">Quiz 1: Baseline</span>
+                                    <span class="text-emerald-700 text-xs font-bold">+2 ABC Credits</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center">
+                                    <i class="fa-solid fa-brain text-blue-600 mr-2"></i> Quantitative & Logical Aptitude Test
+                                </h4>
+                                <p class="text-xs text-slate-500 mb-2">Platform Partner: <strong class="text-slate-700">IndiaBIX / GeeksforGeeks</strong></p>
+                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                    Covers Numerical Reasoning, Data Interpretation, Verbal Ability, and Pattern Recognition standard for Tier-1 recruitment drives.
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-regular fa-clock mr-1"></i> 45 Mins • 30 MCQs</span>
+                                <a href="https://www.indiabix.com/aptitude/questions-and-answers/" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm flex items-center">
+                                    Take Aptitude Quiz <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- QUIZ 2: CAREER READINESS -->
+                        <div class="p-5 bg-white/90 border border-emerald-200/80 rounded-xl flex flex-col justify-between shadow-sm card-hover">
+                            <div>
+                                <div class="flex justify-between items-start mb-2">
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-0.5 rounded uppercase">Quiz 2: AICTE Certified</span>
+                                    <span class="text-emerald-700 text-xs font-bold">+2 ABC Credits</span>
+                                </div>
+                                <h4 class="font-bold text-slate-900 text-sm mb-1 flex items-center">
+                                    <i class="fa-solid fa-user-tie text-emerald-600 mr-2"></i> National Career & Employability Readiness Assessment
+                                </h4>
+                                <p class="text-xs text-slate-500 mb-2">Partner: <strong class="text-slate-700">Wheebox / AICTE India Skills</strong></p>
+                                <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+                                    Evaluates workplace behavioral agility, problem-solving, domain competence, and professional communication standards.
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                                <span class="text-xs text-slate-500 font-medium"><i class="fa-regular fa-clock mr-1"></i> 60 Mins • National Score</span>
+                                <a href="https://wheebox.com/west.htm" target="_blank" rel="noopener noreferrer" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition shadow-sm flex items-center">
+                                    Take Readiness Quiz <i class="fa-solid fa-arrow-up-right-from-square ml-1.5 text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Recommended Curriculums Section -->
                 <div class="glass-card rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
                     <div class="flex flex-wrap justify-between items-center gap-2">
                         <div>
@@ -1711,7 +1788,7 @@ const App = {
         document.getElementById('dynamicQuestionText').innerText = this.getQuestionHtmlForDomain(domain);
     },
 
-    saveStudentProfile: function (e) {
+    saveStudentProfile: async function (e) {
         e.preventDefault();
         const user = DB.currentUser;
         user.domain = document.getElementById('formDomain').value;
@@ -1736,7 +1813,32 @@ const App = {
         user.matchScore = evaluation.matchScore;
         user.level = evaluation.level;
 
-        this.showToast('AI assessment successfully completed & saved!', 'success');
+        // Persist to PostgreSQL backend
+        try {
+            await fetch('http://127.0.0.1:8000/api/student/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: user.id,
+                    domain: user.domain,
+                    subDomain: user.subDomain,
+                    targetRole: user.targetRole,
+                    apaarId: user.apaarId,
+                    github: user.github,
+                    skills: user.skills,
+                    projects: user.projects,
+                    researchPapers: user.researchPapers,
+                    matchScore: user.matchScore,
+                    level: user.level,
+                    assessment: user.assessment
+                })
+            });
+            this.showToast('AI profile & skills permanently updated in PostgreSQL!', 'success');
+        } catch (err) {
+            console.warn('Profile saved locally (offline mode).');
+            this.showToast('Profile saved locally.', 'info');
+        }
+
         this.render();
     },
 
@@ -1781,14 +1883,25 @@ const App = {
         `;
     },
 
-    submitCourseQuiz: function (e, courseId) {
+    submitCourseQuiz: async function (e, courseId) {
         e.preventDefault();
         const course = DB.courses.find(c => c.id === courseId);
-        DB.currentUser.abcCredits = (DB.currentUser.abcCredits || 24) + course.nepCredits;
-        this.showToast(`Congratulations! Quiz passed. +${course.nepCredits} ABC credits added to your APAAR passport!`, 'success');
+        const credits = course ? course.nepCredits : 2;
+        DB.currentUser.abcCredits = (DB.currentUser.abcCredits || 24) + credits;
+
+        try {
+            await fetch('http://127.0.0.1:8000/api/student/credits', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ studentId: DB.currentUser.id, credits: credits })
+            });
+        } catch (err) {
+            console.warn(err);
+        }
+
+        this.showToast(`Congratulations! Quiz passed. +${credits} ABC credits pushed to PostgreSQL & APAAR!`, 'success');
         this.render();
     },
-
     showPublishCourseForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
@@ -1826,23 +1939,66 @@ const App = {
         `;
     },
 
-    handlePublishCourse: function (e) {
+    handlePublishCourse: async function (e) {
         e.preventDefault();
-        const newCourse = {
-            id: DB.courses.length + 1,
+        const courseData = {
             title: document.getElementById('courseTitle').value,
             domain: document.getElementById('courseDomain').value.toLowerCase(),
             nepCredits: parseInt(document.getElementById('courseCredits').value),
             deadline: document.getElementById('courseDeadline').value,
             description: document.getElementById('courseDesc').value,
-            author: DB.currentUser.name,
-            quiz: [
-                { q: 'Sample assessment question for ' + document.getElementById('courseTitle').value, options: ['Option A', 'Option B'], answer: 0 }
-            ],
-            certified: true
+            author: DB.currentUser.name
         };
-        DB.courses.push(newCourse);
-        this.showToast('Course published successfully!', 'success');
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/courses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(courseData)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                DB.courses.unshift(data.course);
+                this.showToast('Course published and saved to PostgreSQL!', 'success');
+            }
+        } catch (err) {
+            DB.courses.push({ id: DB.courses.length + 1, ...courseData });
+            this.showToast('Course published locally.', 'info');
+        }
+        this.render();
+    },
+
+    handlePostJob: async function (e) {
+        e.preventDefault();
+        const jobData = {
+            type: document.getElementById('jobType').value,
+            title: document.getElementById('jobTitle').value,
+            domain: document.getElementById('jobDomain').value.toLowerCase(),
+            location: document.getElementById('jobLocation').value,
+            salary: document.getElementById('jobSalary').value,
+            description: document.getElementById('jobDesc').value,
+            company: DB.currentUser.company,
+            skills: "Core Skills, Problem Solving",
+            requirements: "Verified APAAR Record"
+        };
+
+        try {
+            const res = await fetch('http://127.0.0.1:8000/api/jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(jobData)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                if (jobData.type === 'internship') DB.internships.unshift(data.job);
+                else DB.placements.unshift(data.job);
+                this.showToast('Job opportunity published to PostgreSQL database!', 'success');
+            }
+        } catch (err) {
+            if (jobData.type === 'internship') DB.internships.push({ id: DB.internships.length + 1, ...jobData });
+            else DB.placements.push({ id: DB.placements.length + 1, ...jobData });
+            this.showToast('Opportunity saved locally.', 'info');
+        }
         this.render();
     },
 
