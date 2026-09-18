@@ -458,25 +458,33 @@ def delete_job(job_id: int):
         if conn:
             conn.close()
 
-@app.post("/api/student/credits")
-def add_credits(req: AddCreditsRequest):
-    conn = None
-    cursor = None
+@app.post("/api/login")
+def login_user(req: LoginRequest):
+    conn = get_db_connection()
+    if not conn:
+        raise HTTPException(status_code=500, detail="Database connection failed.")
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE users SET abc_credits = abc_credits + %s WHERE id = %s;", (req.credits, req.studentId))
-        conn.commit()
-        return {"success": True, "message": "Credits updated in PostgreSQL"}
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+        cur.execute("SELECT * FROM users WHERE LOWER(TRIM(email)) = LOWER(TRIM(%s));", (req.email,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found.")
+        
+        db_pass = str(user.get("password") or "").strip()
+        input_pass = str(req.password or "").strip()
+        if db_pass and input_pass and db_pass != input_pass:
+            raise HTTPException(status_code=401, detail="Invalid password.")
+            
+        user.pop("password", None)
+        return user
+    except HTTPException:
+        raise
     except Exception as e:
         if conn:
-            conn.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
             conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

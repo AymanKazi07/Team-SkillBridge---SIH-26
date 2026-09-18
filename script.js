@@ -694,15 +694,62 @@ const App = {
         `;
     },
 
-    handleLogin: function (e, role) {
+    // --- SYNCHRONIZED AUTHENTICATION (PostgreSQL PopSQL + In-Memory Fallback) ---
+    handleLogin: async function (e, role) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
-        const user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
+
+        // 1. Check local seed users first (instant for student@demo.com, academic@demo.com, industry@demo.com)
+        let user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
+
+        // 2. If not found in local memory, check PostgreSQL via server.py
+        if (!user && email) {
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email.toLowerCase(), password: password })
+                });
+
+                if (res.ok) {
+                    const serverUser = await res.json();
+                    user = {
+                        id: serverUser.id || (DB.users.length + 1),
+                        name: serverUser.name || email.split('@')[0],
+                        email: serverUser.email,
+                        password: password,
+                        role: serverUser.role || role,
+                        domain: serverUser.domain || 'engineering',
+                        subDomain: serverUser.domain || 'engineering',
+                        targetRole: '',
+                        matchScore: 80,
+                        apaarId: serverUser.apaar_id || null,
+                        apaarVerified: true,
+                        institution: serverUser.institution || null,
+                        company: serverUser.company || null,
+                        abcCredits: 20,
+                        skills: [],
+                        projects: [],
+                        researchPapers: [],
+                        rejections: [],
+                        testHistory: {}
+                    };
+                    DB.users.push(user);
+                }
+            } catch (err) {
+                console.warn('Server offline, checking local memory:', err);
+            }
+        }
+
         if (user) {
-            DB.currentUser = user; DB.activeStudentTab = 'overview';
-            this.showToast(`Welcome back, ${user.name}!`, 'success'); this.render();
-        } else { this.showToast('Invalid credentials. Please verify your role and email.', 'error'); }
+            DB.currentUser = user;
+            DB.activeStudentTab = 'overview';
+            this.showToast(`Welcome back, ${user.name}!`, 'success');
+            this.render();
+        } else {
+            this.showToast('Invalid credentials. Please verify your role and email.', 'error');
+        }
     },
 
     handleRegister: function (e, role) {
