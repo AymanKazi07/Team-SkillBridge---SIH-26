@@ -1128,6 +1128,10 @@ const App = {
                 </div>
 
                 <div id="student-tab-navigation" class="flex flex-wrap gap-2 border-b border-cyan-100 pb-3">
+                    <button data-tab="progress" onclick="App.setStudentTab('progress')" class="px-4 py-2 text-xs rounded-full transition-all duration-200 flex items-center ${tabBtnStyle('progress')}">
+                        <i class="fa-solid fa-bars-progress mr-2"></i> Progress Check
+                        ${user.hiringStatus === 'Hired' ? '<span class="ml-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>' : ''}
+                    </button>
                     <button data-tab="overview" onclick="App.setStudentTab('overview')" class="px-4 py-2 text-xs rounded-full transition-all duration-200 flex items-center ${tabBtnStyle('overview')}">
                         <i class="fa-solid fa-chart-pie mr-2"></i> Skill & Audit Overview
                     </button>
@@ -1164,6 +1168,7 @@ const App = {
             case 'interview': return this.renderStudentInterviewTab(user);
             case 'resume': return this.renderStudentResumeTab(user);
             case 'opportunities': return this.renderStudentOpportunitiesTab(user);
+            case 'progress': return this.renderStudentProgressTab(user);
             case 'overview':
             default:
                 return this.renderStudentOverviewTab(user);
@@ -2913,6 +2918,150 @@ const App = {
         }
     },
 
+    getStudentProgressStages: function (student) {
+        const aptTest = student.testHistory && student.testHistory.aptitude;
+        const stage1Pass = aptTest ? (aptTest.percentage >= 60) : true;
+        const stage1Score = aptTest ? `${aptTest.score}/${aptTest.total} (${aptTest.percentage}%)` : "16/20 (80%)";
+        const stage1Details = aptTest && aptTest.strengths.length > 0
+            ? aptTest.strengths.map(s => s.category + ': ' + s.percentage + '%').join(' • ')
+            : "Quantitative: 85% • Logical: 80% • Verbal: 75% • Data Interpretation: 80%";
+
+        const matchScore = student.matchScore || (student.assessment && student.assessment.score) || 88;
+        const stage2Pass = matchScore >= 70;
+        const stage2Score = `${matchScore}/100`;
+        const stage2Details = student.domain === 'engineering'
+            ? "System Architecture: Advanced (94%) • Code Quality: Clean Modular AST • Algorithm Velocity: Fast • STAR Validated"
+            : "Clinical Monographs: Proficient (90%) • Pharmacovigilance Protocols: Advanced (88%) • PLIM Regulatory: Validated";
+
+        const stage3Org = student.domain === 'engineering'
+            ? "Cloud Systems & Microservices Intern • TechCorp Labs (6 Months)"
+            : "Clinical Phytopharmacy & Formulation Intern • Dabur R&D Labs (6 Months)";
+        const stage3Details = `Accumulated: ${student.abcCredits || 28} NEP ABC Credits • ${(student.projects || []).length} Live Production Projects • APAAR Identity Verified`;
+
+        return {
+            stage1: { title: "Stage 1: Aptitude Test", status: stage1Pass ? "PASS" : "FAIL", isPass: stage1Pass, score: stage1Score, details: stage1Details },
+            stage2: { title: "Stage 2: Technical Interview", status: stage2Pass ? "PASS" : "FAIL", isPass: stage2Pass, score: stage2Score, details: stage2Details },
+            stage3: { title: "Stage 3: Internship / Job Experience", status: "VERIFIED & COMPLETED", isPass: true, org: stage3Org, details: stage3Details }
+        };
+    },
+
+    toggleCandidateProgress: function (studentId) {
+        if (!this.openProgressPanels) this.openProgressPanels = {};
+        this.openProgressPanels[studentId] = !this.openProgressPanels[studentId];
+        const panel = document.getElementById('prog-panel-' + studentId);
+        const arrow = document.getElementById('prog-arrow-' + studentId);
+        if (panel) {
+            panel.classList.toggle('hidden');
+            if (arrow) arrow.style.transform = panel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+    },
+
+    decideHiring: function (studentId, decision) {
+        const student = DB.users.find(u => u.id === studentId);
+        if (!student) return;
+
+        const amountInput = document.getElementById('signingAmount_' + studentId);
+        const amount = amountInput && amountInput.value.trim() !== "" ? amountInput.value.trim() : (student.domain === 'engineering' ? '₹16.5 LPA' : '₹12.0 LPA');
+
+        student.hiringStatus = decision;
+        student.signingAmount = decision === 'Hired' ? amount : null;
+        student.hiringCompany = DB.currentUser ? DB.currentUser.company : 'Industry Partner';
+        student.hiredDate = new Date().toLocaleDateString();
+
+        if (decision === 'Hired') {
+            this.showToast(`🎉 ${student.name} marked as HIRED with signing amount ${student.signingAmount}! Saved to database.`, 'success');
+        } else {
+            this.showToast(`❌ ${student.name} marked as REJECTED. Saved to database.`, 'error');
+        }
+
+        this.render();
+    },
+
+    resetHiringDecision: function (studentId) {
+        const student = DB.users.find(u => u.id === studentId);
+        if (student) {
+            student.hiringStatus = 'Pending';
+            student.signingAmount = null;
+            student.hiringCompany = null;
+            student.hiredDate = null;
+            this.showToast(`Hiring status reset for ${student.name}.`, 'info');
+            this.render();
+        }
+    },
+
+    renderStudentProgressTab: function (user) {
+        const stages = this.getStudentProgressStages(user);
+        return `
+            <div class="space-y-6">
+                <!-- Hiring Status Banner -->
+                <div class="p-6 rounded-2xl border shadow-sm ${user.hiringStatus === 'Hired' ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950' : (user.hiringStatus === 'Rejected' ? 'bg-rose-50/90 border-rose-300 text-rose-950' : 'bg-white/90 border-cyan-200 text-slate-800')}">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wide block mb-1">Official Candidate Selection Status</span>
+                            <h3 class="text-2xl font-extrabold flex items-center gap-2">
+                                ${user.hiringStatus === 'Hired'
+                ? '<i class="fa-solid fa-circle-check text-emerald-600"></i> Selected & Hired!'
+                : (user.hiringStatus === 'Rejected'
+                    ? '<i class="fa-solid fa-circle-xmark text-rose-600"></i> Application Reviewed (Not Selected)'
+                    : '<i class="fa-solid fa-clock text-cyan-600"></i> Under Active Industry Review')}
+                            </h3>
+                            ${user.hiringStatus === 'Hired' ? `
+                                <p class="text-xs text-emerald-800 font-semibold mt-1">
+                                    Offered by <strong>${user.hiringCompany || 'Industry Recruiter'}</strong> • Agreed Signing Amount: <strong class="text-emerald-950 text-sm">${user.signingAmount}</strong> • Verified on ${user.hiredDate}
+                                </p>
+                            ` : ''}
+                        </div>
+                        <span class="px-4 py-2 rounded-full text-xs font-bold ${user.hiringStatus === 'Hired' ? 'bg-emerald-600 text-white' : (user.hiringStatus === 'Rejected' ? 'bg-rose-600 text-white' : 'bg-cyan-100 text-cyan-800')}">
+                            Database Status: ${user.hiringStatus || 'Pending'}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 3 Stages Detailed Display -->
+                <div class="grid md:grid-cols-3 gap-5">
+                    <!-- Stage 1 -->
+                    <div class="bg-white/90 p-5 rounded-2xl border ${stages.stage1.isPass ? 'border-emerald-200' : 'border-rose-200'} shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold uppercase text-slate-500">Stage 1</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${stages.stage1.isPass ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${stages.stage1.status}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm">Aptitude Assessment</h4>
+                        <p class="text-lg font-extrabold text-slate-800">${stages.stage1.score}</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">${stages.stage1.details}</p>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="bg-white/90 p-5 rounded-2xl border ${stages.stage2.isPass ? 'border-emerald-200' : 'border-rose-200'} shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold uppercase text-slate-500">Stage 2</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${stages.stage2.isPass ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${stages.stage2.status}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm">Technical & AI Interview</h4>
+                        <p class="text-lg font-extrabold text-slate-800">${stages.stage2.score}</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">${stages.stage2.details}</p>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="bg-white/90 p-5 rounded-2xl border border-teal-200 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold uppercase text-slate-500">Stage 3</span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-100 text-teal-800">
+                                ${stages.stage3.status}
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm">Internship Experience</h4>
+                        <p class="text-xs font-bold text-teal-800">${stages.stage3.org}</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">${stages.stage3.details}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
     renderIndustrialistView: function (user) {
         const myInternships = DB.internships.filter(i => i.company === user.company);
         const myPlacements = DB.placements.filter(p => p.company === user.company);
@@ -3002,41 +3151,157 @@ const App = {
                         </button>
                     </div>
 
-                    <div class="space-y-3">
-                        ${candidatePool.map(s => `
-                            <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover">
-                                <div class="flex items-center space-x-4">
-                                    <div class="${DB.isBlindHiring ? 'hidden' : 'block'}">
-                                        ${this.getAvatarHtml(s, 'w-10 h-10', 'text-sm', 'border border-slate-300')}
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-slate-900 text-sm ${DB.isBlindHiring ? 'blur-text' : ''}">${s.name}</h4>
-                                        <p class="text-xs text-slate-500 font-mono">
-                                            Target: ${s.targetRole || 'Not Specified'} 
-                                            ${DB.isBlindHiring ? `| <strong class="text-teal-700 ml-1">APAAR ID: ${s.apaarId}</strong>` : ''}
-                                        </p>
-                                        <div class="flex gap-1.5 mt-2">
-                                            ${(s.skills || []).map(sk => `<span class="bg-slate-100 text-slate-700 text-[10px] px-2.5 py-0.5 rounded-full">${sk}</span>`).join('')}
+                    <div class="space-y-4">
+                        ${candidatePool.map(s => {
+            const stages = this.getStudentProgressStages(s);
+            const isPanelOpen = this.openProgressPanels && this.openProgressPanels[s.id];
+            const isHired = s.hiringStatus === 'Hired';
+            const isRejected = s.hiringStatus === 'Rejected';
+
+            return `
+                                <div class="p-5 bg-white/90 rounded-2xl border ${isHired ? 'border-emerald-300 ring-2 ring-emerald-100' : (isRejected ? 'border-rose-200' : 'border-cyan-100')} space-y-4 card-hover shadow-sm">
+                                    <div class="flex flex-wrap justify-between items-start gap-4">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="${DB.isBlindHiring ? 'hidden' : 'block'}">
+                                                ${this.getAvatarHtml(s, 'w-12 h-12', 'text-sm', isHired ? 'border-2 border-emerald-500' : 'border border-slate-300')}
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center space-x-2">
+                                                    <h4 class="font-bold text-slate-900 text-sm ${DB.isBlindHiring ? 'blur-text' : ''}">${s.name}</h4>
+                                                    ${isHired ? `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-300"><i class="fa-solid fa-check text-emerald-600 mr-1"></i>HIRED (${s.signingAmount || 'Offer Given'})</span>` : ''}
+                                                    ${isRejected ? `<span class="bg-rose-100 text-rose-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-rose-300"><i class="fa-solid fa-xmark text-rose-600 mr-1"></i>REJECTED</span>` : ''}
+                                                </div>
+                                                <p class="text-xs text-slate-500 font-mono mt-0.5">
+                                                    Target: ${s.targetRole || 'Not Specified'} 
+                                                    ${DB.isBlindHiring ? `| <strong class="text-teal-700 ml-1">APAAR ID: ${s.apaarId}</strong>` : ''}
+                                                </p>
+                                                <div class="flex flex-wrap gap-1.5 mt-2">
+                                                    ${(s.skills || []).map(sk => `<span class="bg-slate-100 text-slate-700 text-[10px] px-2.5 py-0.5 rounded-full">${sk}</span>`).join('')}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center space-x-3">
+                                            <div class="text-right hidden sm:block">
+                                                <span class="text-sm font-bold text-cyan-800">${s.matchScore || s.assessment?.score || 85}% Match</span>
+                                                <span class="block text-[10px] text-teal-700 font-semibold">APAAR Verified</span>
+                                            </div>
+                                            <button onclick="App.toggleCandidateProgress(${s.id})" class="text-xs font-semibold px-3.5 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm flex items-center gap-1.5">
+                                                <i class="fa-solid fa-list-check"></i> Progress Check
+                                                <i id="prog-arrow-${s.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" style="transform: ${isPanelOpen ? 'rotate(180deg)' : 'rotate(0deg)'};"></i>
+                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="flex flex-col items-end space-y-2">
-                                    <div class="text-right">
-                                        <span class="text-sm font-bold text-cyan-800">${s.matchScore || s.assessment?.score || 85}% Match</span>
-                                        <span class="block text-[10px] text-teal-700 font-semibold">APAAR Verified</span>
+
+                                    <!-- Collapsible Progress Check & Industry Decision Panel -->
+                                    <div id="prog-panel-${s.id}" class="${isPanelOpen ? 'block' : 'hidden'} pt-4 border-t border-cyan-100 space-y-4 animate-fadeIn">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center">
+                                                <i class="fa-solid fa-bars-progress text-cyan-600 mr-1.5"></i> 3-Stage Progress Verification Telemetry
+                                            </span>
+                                            <span class="text-[11px] text-slate-400 font-mono">APAAR: ${s.apaarId || '8942-7712-4401'}</span>
+                                        </div>
+
+                                        <!-- 3 Stages Grid -->
+                                        <div class="grid md:grid-cols-3 gap-3">
+                                            <!-- Stage 1 -->
+                                            <div class="p-3.5 bg-cyan-50/30 rounded-xl border ${stages.stage1.isPass ? 'border-emerald-200' : 'border-rose-200'} text-xs space-y-1.5">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-bold text-slate-700">${stages.stage1.title}</span>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${stages.stage1.isPass ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                                        ${stages.stage1.status}
+                                                    </span>
+                                                </div>
+                                                <p class="font-extrabold text-slate-900">${stages.stage1.score}</p>
+                                                <p class="text-[11px] text-slate-500 leading-tight">${stages.stage1.details}</p>
+                                            </div>
+
+                                            <!-- Stage 2 -->
+                                            <div class="p-3.5 bg-cyan-50/30 rounded-xl border ${stages.stage2.isPass ? 'border-emerald-200' : 'border-rose-200'} text-xs space-y-1.5">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-bold text-slate-700">${stages.stage2.title}</span>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${stages.stage2.isPass ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                                        ${stages.stage2.status}
+                                                    </span>
+                                                </div>
+                                                <p class="font-extrabold text-slate-900">${stages.stage2.score}</p>
+                                                <p class="text-[11px] text-slate-500 leading-tight">${stages.stage2.details}</p>
+                                            </div>
+
+                                            <!-- Stage 3 -->
+                                            <div class="p-3.5 bg-cyan-50/30 rounded-xl border border-teal-200 text-xs space-y-1.5">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="font-bold text-slate-700">${stages.stage3.title}</span>
+                                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-teal-100 text-teal-800">
+                                                        ${stages.stage3.status}
+                                                    </span>
+                                                </div>
+                                                <p class="font-bold text-teal-800">${stages.stage3.org}</p>
+                                                <p class="text-[11px] text-slate-500 leading-tight">${stages.stage3.details}</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Industry Hiring & Signing Amount Panel -->
+                                        ${!isHired && !isRejected ? `
+                                            <div class="bg-slate-900 text-white p-4 rounded-xl border border-slate-800 space-y-3">
+                                                <div class="flex justify-between items-center">
+                                                    <h5 class="text-xs font-bold uppercase tracking-wide text-cyan-400 flex items-center">
+                                                        <i class="fa-solid fa-handshake mr-1.5"></i> Industry Hiring Decision (${user.company})
+                                                    </h5>
+                                                    <span class="text-[10px] text-slate-400">Updates candidate record in database</span>
+                                                </div>
+                                                <div class="flex flex-wrap items-end gap-3">
+                                                    <div class="flex-1 min-w-[220px]">
+                                                        <label class="block text-[10px] uppercase font-bold text-slate-300 mb-1">Proposed Signing Amount / Package</label>
+                                                        <input type="text" id="signingAmount_${s.id}" value="${s.domain === 'engineering' ? '₹16.5 LPA' : '₹12.0 LPA'}" placeholder="e.g. ₹15.0 LPA or ₹40,000 / mo" class="w-full px-3.5 py-1.5 text-xs rounded-lg bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-400">
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <button onclick="App.decideHiring(${s.id}, 'Hired')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-full transition shadow-sm flex items-center">
+                                                            <i class="fa-solid fa-check mr-1.5"></i> Hire Candidate
+                                                        </button>
+                                                        <button onclick="App.decideHiring(${s.id}, 'Rejected')" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-full transition shadow-sm flex items-center">
+                                                            <i class="fa-solid fa-xmark mr-1.5"></i> Reject
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ` : (isHired ? `
+                                            <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-emerald-900 gap-2">
+                                                <div>
+                                                    <span class="font-extrabold flex items-center gap-1.5 text-emerald-800">
+                                                        <i class="fa-solid fa-circle-check text-emerald-600"></i> HIRED BY ${s.hiringCompany || user.company}
+                                                    </span>
+                                                    <p class="text-[11px] text-emerald-700 mt-0.5">
+                                                        Approved Signing Package: <strong class="text-emerald-950">${s.signingAmount}</strong> • Logged on: <strong>${s.hiredDate}</strong>
+                                                    </p>
+                                                </div>
+                                                <button onclick="App.resetHiringDecision(${s.id})" class="text-[11px] bg-white hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full border border-emerald-300 transition">
+                                                    Modify Decision
+                                                </button>
+                                            </div>
+                                        ` : `
+                                            <div class="bg-rose-50 border border-rose-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-rose-900 gap-2">
+                                                <div>
+                                                    <span class="font-extrabold flex items-center gap-1.5 text-rose-800">
+                                                        <i class="fa-solid fa-circle-xmark text-rose-600"></i> REJECTED BY ${s.hiringCompany || user.company}
+                                                    </span>
+                                                    <p class="text-[11px] text-rose-700 mt-0.5">Status saved in database on ${s.hiredDate}</p>
+                                                </div>
+                                                <button onclick="App.resetHiringDecision(${s.id})" class="text-[11px] bg-white hover:bg-rose-100 text-rose-800 font-bold px-3 py-1 rounded-full border border-rose-300 transition">
+                                                    Reconsider Candidate
+                                                </button>
+                                            </div>
+                                        `)}
                                     </div>
-                                    <button onclick="App.logMissingSkill(${s.id})" class="text-[10px] border border-rose-300 text-rose-700 hover:bg-rose-50 px-3 py-1 rounded-full font-bold transition shadow-sm">
-                                        <i class="fa-solid fa-xmark mr-1"></i> Reject & Log Skill Gap
-                                    </button>
                                 </div>
-                            </div>
-                        `).join('')}
+                            `;
+        }).join('')}
                         ${candidatePool.length === 0 ? '<p class="text-xs text-slate-500 italic">No candidates match your AI query or they have been removed from your pipeline.</p>' : ''}
                     </div>
                 </div>
             </div>
         `;
-    }
+    },
 };
 
 window.addEventListener('DOMContentLoaded', () => {
