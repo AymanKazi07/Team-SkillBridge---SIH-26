@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,29 +24,26 @@
         }
     </script>
     <!-- Google Fonts & FontAwesome Icons -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    
     <!-- Chart.js for Institutional Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-
-<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between text-base leading-relaxed">
+<body class="text-slate-800 antialiased min-h-screen w-full flex flex-col justify-between text-base leading-relaxed bg-slate-50 overflow-x-hidden">
 
     <!-- Global Persistent Animated Motion Background Container -->
-    <div id="global-background">
+    <div id="global-background" class="fixed inset-0 w-full h-full pointer-events-none z-0">
         <div class="animated-gradient-layer"></div>
         <div class="milky-hero-pattern" id="grid-layer"></div>
         <div class="orb orb-1" id="orb-1"></div>
         <div class="orb orb-2" id="orb-2"></div>
         <div class="orb orb-3" id="orb-3"></div>
         <div class="orb orb-4" id="orb-4"></div>
-
+        
         <!-- Subtle Floating Glass Geometric Elements -->
         <div class="floating-glass-shape shape-1" id="glass-shape-1"></div>
         <div class="floating-glass-shape shape-2" id="glass-shape-2"></div>
@@ -57,8 +53,8 @@
     </div>
 
     <!-- Main Dynamic Application Container -->
-    <div id="app-content" class="min-h-screen flex flex-col justify-between">
-        <div id="app"></div>
+    <div id="app-content" class="min-h-screen w-full flex flex-col justify-between relative z-10">
+        <div id="app" class="w-full flex-1 flex flex-col"></div>
     </div>
 
     <!-- Toast Notification Container -->
@@ -68,5 +64,4 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>

@@ -121,10 +121,9 @@ const DB = {
     seed: function () {
         if (this.users.length === 0) {
             this.users = [
-                // 1. Existing General Student
                 {
                     id: 1, name: 'Aaditya Sharma', email: 'student@demo.com', password: 'demo123',
-                    role: 'student', apaarId: '8942-7712-4401', apaarVerified: true, domain: 'ayush',
+                    role: 'student', apaarId: '[Aadhaar Omitted]', apaarVerified: true, domain: 'ayush',
                     subDomain: 'Ayurvedic Pharmacognosy & Dravyaguna', targetRole: 'Senior Clinical AYUSH Researcher',
                     matchScore: 84, skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance'],
                     projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
@@ -147,10 +146,9 @@ const DB = {
                         ]
                     }
                 },
-                // 2. Engineering Student Demo
                 {
                     id: 4, name: 'Rohan Verma', email: 'engineering@demo.com', password: 'demo123',
-                    role: 'student', apaarId: '7821-4439-9012', apaarVerified: true, domain: 'engineering',
+                    role: 'student', apaarId: '[Aadhaar Omitted]', apaarVerified: true, domain: 'engineering',
                     subDomain: 'Software Systems & Cloud Architecture', targetRole: 'Senior Cloud & AI Systems Engineer',
                     matchScore: 92, skills: ['React', 'TypeScript', 'Microservices', 'Python', 'Vector DBs', 'Cloud Architecture'],
                     projects: ['Distributed Health Telemetry Pipeline', 'Real-time RAG Search Engine'],
@@ -174,10 +172,9 @@ const DB = {
                         ]
                     }
                 },
-                // 3. Medical Student Demo
                 {
                     id: 5, name: 'Dr. Priya Nair', email: 'medical@demo.com', password: 'demo123',
-                    role: 'student', apaarId: '6510-8823-1194', apaarVerified: true, domain: 'ayush',
+                    role: 'student', apaarId: '[Aadhaar Omitted]', apaarVerified: true, domain: 'ayush',
                     subDomain: 'Ayurvedic Pharmacognosy & Clinical Pharmacology', targetRole: 'Senior Clinical AYUSH Researcher',
                     matchScore: 88, skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance', 'Reverse Pharmacology'],
                     projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
@@ -201,18 +198,11 @@ const DB = {
                         ]
                     }
                 },
-                // 4. Academician - Medical (AYUSH)
                 { id: 2, name: 'Prof. (Dr.) V. K. Joshi', email: 'academic.med@demo.com', password: 'demo123', role: 'academician', institution: 'National Institute of Ayurveda / All India Council', domain: 'ayush', profilePhoto: null, skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'], courses: [1] },
                 { id: 8, name: 'Prof. (Dr.) V. K. Joshi', email: 'academic@demo.com', password: 'demo123', role: 'academician', institution: 'National Institute of Ayurveda / All India Council', domain: 'ayush', profilePhoto: null, skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'], courses: [1] },
-
-                // 5. Academician - Engineering
                 { id: 6, name: 'Prof. (Dr.) Rajesh Sharma', email: 'academic.eng@demo.com', password: 'demo123', role: 'academician', institution: 'IIT Delhi / AICTE Technology Cell', domain: 'engineering', profilePhoto: null, skills: ['Distributed Systems', 'Cloud Architecture', 'NEP 2020 Curriculum', 'Edge AI'], courses: [2] },
-
-                // 6. Industry - Medical (AYUSH)
                 { id: 3, name: 'Himalaya & Dabur Health R&D', email: 'industry.med@demo.com', password: 'demo123', role: 'industrialist', company: 'Dabur India R&D Labs', domain: 'ayush', profilePhoto: null, skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling'] },
                 { id: 9, name: 'Himalaya & Dabur Health R&D', email: 'industry@demo.com', password: 'demo123', role: 'industrialist', company: 'Dabur India R&D Labs', domain: 'ayush', profilePhoto: null, skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling'] },
-
-                // 7. Industry - Engineering
                 { id: 7, name: 'Google Cloud & TechCorp Labs', email: 'industry.eng@demo.com', password: 'demo123', role: 'industrialist', company: 'Google Cloud & TechCorp Labs', domain: 'engineering', profilePhoto: null, skills: ['Cloud Architecture', 'Microservices', 'Distributed AI', 'DevOps'] }
             ];
 
@@ -417,7 +407,6 @@ const TEST_BATTERY_QUESTIONS = {
     ]
 };
 
-// Seed-based per-user pseudo-random question & option shuffler (re-shuffles on every attempt)
 function getShuffledTestQuestions(userId, testType, domain) {
     const key = testType === 'aptitude' ? 'aptitude' : (domain || 'ayush').toLowerCase();
     const baseQuestions = TEST_BATTERY_QUESTIONS[key] || TEST_BATTERY_QUESTIONS.ayush;
@@ -576,9 +565,9 @@ const App = {
 
     renderLanding: function (app) {
         app.innerHTML = `
-            <div class="min-h-screen text-slate-800 flex flex-col justify-between">
-                <nav class="border-b border-cyan-100/60 bg-white/70 backdrop-blur-md sticky top-0 z-40">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            <div class="min-h-screen w-full text-slate-800 flex flex-col justify-between">
+                <nav class="border-b border-cyan-100/60 bg-white/70 backdrop-blur-md sticky top-0 z-40 w-full">
+                    <div class="w-full px-6 sm:px-12 lg:px-16 py-3.5 flex justify-between items-center">
                         ${this.getLogoHtml()}
                         <div class="flex items-center space-x-3">
                             <button onclick="App.showLogin('student')" class="text-xs font-semibold px-4 py-2 rounded-full bg-blue-600 text-white transition shadow-sm">
@@ -594,235 +583,221 @@ const App = {
                     </div>
                 </nav>
 
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 text-center z-10 relative">
-                    <div class="framer-reveal stagger-1">
-                        <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight mb-6 text-slate-900">
+                <div class="w-full px-6 sm:px-12 lg:px-16 pt-12 pb-20 text-center z-10 relative flex-1 flex flex-col justify-center">
+                    <div class="framer-reveal stagger-1 w-full">
+                        <h1 class="text-3xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight w-full mx-auto leading-tight mb-6 text-slate-900">
                             Unified Skill Validation & <br>
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-teal-600 to-sky-600">
                                 Academic Gap Intelligence Platform
                             </span>
                         </h1>
                         
-                        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
+                        <p class="text-base sm:text-xl text-slate-600 w-full max-w-5xl mx-auto mb-10 leading-relaxed font-normal">
                             Connecting Students, Enterprises, and Educational Institutions with real-time AI skill mapping, NPTEL/AYUSH credit transfer, and official qualification records.
                         </p>
 
                         <div class="flex flex-wrap justify-center gap-4 mb-14">
-                            <button onclick="App.showLogin('student')" class="px-7 py-3.5 bg-blue-600 text-white font-semibold text-sm rounded-full shadow-lg transition flex items-center">
+                            <button onclick="App.showLogin('student')" class="px-8 py-4 bg-blue-600 text-white font-semibold text-base rounded-full shadow-lg transition flex items-center">
                                 Access Student Portal <i class="fa-solid fa-arrow-right ml-2"></i>
                             </button>
-                            <button onclick="App.showLogin('industrialist')" class="px-7 py-3.5 glass-card hover:bg-white text-slate-800 border border-cyan-200/80 font-semibold text-sm rounded-full shadow-sm transition">
+                            <button onclick="App.showLogin('industrialist')" class="px-8 py-4 glass-card hover:bg-white text-slate-800 border border-cyan-200/80 font-semibold text-base rounded-full shadow-sm transition">
                                 Enterprise Recruiting Portal
                             </button>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-16">
-                            <div class="glass-card p-4 rounded-2xl shadow-sm text-center card-hover">
-                                <div class="text-2xl font-extrabold text-cyan-600">100%</div>
-                                <div class="text-xs text-slate-500 font-medium mt-1">APAAR Integrated</div>
+                        <!-- Fluid Stat Grid -->
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-16">
+                            <div class="glass-card p-6 rounded-2xl shadow-sm text-center card-hover">
+                                <div class="text-3xl font-extrabold text-cyan-600">100%</div>
+                                <div class="text-xs sm:text-sm text-slate-500 font-medium mt-1">APAAR Integrated</div>
                             </div>
-                            <div class="glass-card p-4 rounded-2xl shadow-sm text-center card-hover">
-                                <div class="text-2xl font-extrabold text-slate-900">AICTE</div>
-                                <div class="text-xs text-slate-500 font-medium mt-1">Credit Compliant</div>
+                            <div class="glass-card p-6 rounded-2xl shadow-sm text-center card-hover">
+                                <div class="text-3xl font-extrabold text-slate-900">AICTE</div>
+                                <div class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Credit Compliant</div>
                             </div>
-                            <div class="glass-card p-4 rounded-2xl shadow-sm text-center card-hover">
-                                <div class="text-2xl font-extrabold text-teal-600">NAPS 2.0</div>
-                                <div class="text-xs text-slate-500 font-medium mt-1">Stipend Eligible</div>
+                            <div class="glass-card p-6 rounded-2xl shadow-sm text-center card-hover">
+                                <div class="text-3xl font-extrabold text-teal-600">NAPS 2.0</div>
+                                <div class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Stipend Eligible</div>
                             </div>
-                            <div class="glass-card p-4 rounded-2xl shadow-sm text-center card-hover">
-                                <div class="text-2xl font-extrabold text-sky-600">NCVET</div>
-                                <div class="text-xs text-slate-500 font-medium mt-1">Verified Qualification</div>
+                            <div class="glass-card p-6 rounded-2xl shadow-sm text-center card-hover">
+                                <div class="text-3xl font-extrabold text-sky-600">NCVET</div>
+                                <div class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Verified Qualification</div>
                             </div>
                         </div>
 
                         <div class="text-xs font-bold uppercase tracking-widest text-cyan-800 mb-6">Designed for Key Stakeholders</div>
 
-                        <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto text-left mb-16">
-                            <div class="glass-card border border-cyan-100 hover:border-cyan-400 rounded-2xl p-6 card-hover flex flex-col justify-between shadow-sm">
+                        <!-- Stakeholder Cards: Auto-fill width -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full text-left mb-16">
+                            <div class="glass-card border border-cyan-100 hover:border-cyan-400 rounded-2xl p-8 card-hover flex flex-col justify-between shadow-sm">
                                 <div>
-                                    <div class="w-12 h-12 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 text-xl mb-4">
+                                    <div class="w-14 h-14 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 text-2xl mb-4">
                                         <i class="fa-solid fa-graduation-cap"></i>
                                     </div>
-                                    <h3 class="text-xl font-bold text-slate-900 mb-2">Students & Researchers</h3>
-                                    <p class="text-slate-600 text-xs mb-4 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Students & Researchers</h3>
+                                    <p class="text-slate-600 text-sm mb-6 leading-relaxed">
                                         Complete automated AI assessment across GitHub repos, research papers, and technical tests. Accumulate NEP 2020 APAAR credits.
                                     </p>
                                 </div>
-                                <button onclick="App.showLogin('student')" class="w-full py-2.5 bg-blue-600 text-white rounded-full text-xs font-semibold transition">
+                                <button onclick="App.showLogin('student')" class="w-full py-3 bg-blue-600 text-white rounded-full text-xs font-semibold transition">
                                     Student Login / Register &rarr;
                                 </button>
                             </div>
 
-                            <div class="glass-card border border-cyan-100 hover:border-teal-400 rounded-2xl p-6 card-hover flex flex-col justify-between shadow-sm">
+                            <div class="glass-card border border-cyan-100 hover:border-teal-400 rounded-2xl p-8 card-hover flex flex-col justify-between shadow-sm">
                                 <div>
-                                    <div class="w-12 h-12 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 text-xl mb-4">
+                                    <div class="w-14 h-14 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 text-2xl mb-4">
                                         <i class="fa-solid fa-book-medical"></i>
                                     </div>
-                                    <h3 class="text-xl font-bold text-slate-900 mb-2">Academicians & Faculty</h3>
-                                    <p class="text-slate-600 text-xs mb-4 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Academicians & Faculty</h3>
+                                    <p class="text-slate-600 text-sm mb-6 leading-relaxed">
                                         Publish deadline-based certified courses, launch timed quizzes, and participate in FDPs & AYUSH clinical research.
                                     </p>
                                 </div>
-                                <button onclick="App.showLogin('academician')" class="w-full py-2.5 bg-teal-700 hover:bg-teal-800 text-white rounded-full text-xs font-semibold transition">
+                                <button onclick="App.showLogin('academician')" class="w-full py-3 bg-teal-700 hover:bg-teal-800 text-white rounded-full text-xs font-semibold transition">
                                     Faculty Portal &rarr;
                                 </button>
                             </div>
 
-                            <div class="glass-card border border-cyan-100 hover:border-slate-400 rounded-2xl p-6 card-hover flex flex-col justify-between shadow-sm">
+                            <div class="glass-card border border-cyan-100 hover:border-slate-400 rounded-2xl p-8 card-hover flex flex-col justify-between shadow-sm">
                                 <div>
-                                    <div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 text-xl mb-4">
+                                    <div class="w-14 h-14 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 text-2xl mb-4">
                                         <i class="fa-solid fa-briefcase"></i>
                                     </div>
-                                    <h3 class="text-xl font-bold text-slate-900 mb-2">Industry & R&D Labs</h3>
-                                    <p class="text-slate-600 text-xs mb-4 leading-relaxed">
+                                    <h3 class="text-2xl font-bold text-slate-900 mb-2">Industry & R&D Labs</h3>
+                                    <p class="text-slate-600 text-sm mb-6 leading-relaxed">
                                         Post skill-mapped internships and placements. Directly review verified candidate scores and APAAR credit portfolios.
                                     </p>
                                 </div>
-                                <button onclick="App.showLogin('industrialist')" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-full text-xs font-semibold transition">
+                                <button onclick="App.showLogin('industrialist')" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white rounded-full text-xs font-semibold transition">
                                     Industry Access &rarr;
                                 </button>
                             </div>
                         </div>
 
-                        <!-- EXPLORE THE ECOSYSTEM FLOW INDICATOR -->
-                        <div class="flex flex-col items-center mb-10">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-800 mb-2">Explore the Ecosystem Flow</span>
-                            <div class="w-5 h-8 rounded-full border-2 border-cyan-400/80 flex justify-center pt-1 shadow-sm">
-                                <div class="w-1 h-2 bg-cyan-600 rounded-full animate-bounce"></div>
-                            </div>
-                        </div>
-
-                        <!-- THE SKILLBRIDGE ECOSYSTEM CONTAINER -->
-                        <div class="bg-white rounded-3xl border border-cyan-200/70 p-8 sm:p-10 shadow-xl max-w-5xl mx-auto mb-20 text-center relative z-10">
-                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">The SkillBridge Ecosystem</h2>
-                            <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto mb-8 leading-relaxed">
+                        <!-- Full Width Ecosystem Container -->
+                        <div class="bg-white rounded-3xl border border-cyan-200/70 p-8 sm:p-12 shadow-xl w-full mb-20 text-center relative z-10">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2">The SkillBridge Ecosystem</h2>
+                            <p class="text-sm sm:text-base text-slate-500 w-full max-w-3xl mx-auto mb-10 leading-relaxed">
                                 A seamless flow connecting validated student competencies with academic accreditation and active industry demands.
                             </p>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <!-- Card 1: Student Profile -->
-                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-6 text-left transition card-hover flex flex-col justify-between">
                                     <div>
-                                        <div class="w-9 h-9 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 mb-3 text-sm">
+                                        <div class="w-10 h-10 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 mb-4 text-base">
                                             <i class="fa-solid fa-id-badge"></i>
                                         </div>
-                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">1. Student Profile</h4>
-                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>APAAR / ABC Integration</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>AI Skill-Gap Analysis</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>Technical Code Telemetry</li>
+                                        <h4 class="font-bold text-slate-900 text-base mb-3">1. Student Profile</h4>
+                                        <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2"></i>APAAR / ABC Integration</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2"></i>AI Skill-Gap Analysis</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2"></i>Technical Code Telemetry</li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- Card 2: Academic Alignment -->
-                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-6 text-left transition card-hover flex flex-col justify-between">
                                     <div>
-                                        <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 mb-3 text-sm">
+                                        <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 mb-4 text-base">
                                             <i class="fa-solid fa-book-bookmark"></i>
                                         </div>
-                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">2. Academic Alignment</h4>
-                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>NEP-2020 Course Credits</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>Certified Faculty Modules</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>AI Syllabus Auditor</li>
+                                        <h4 class="font-bold text-slate-900 text-base mb-3">2. Academic Alignment</h4>
+                                        <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2"></i>NEP-2020 Course Credits</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2"></i>Certified Faculty Modules</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2"></i>AI Syllabus Auditor</li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- Card 3: Industry Intelligence -->
-                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-6 text-left transition card-hover flex flex-col justify-between">
                                     <div>
-                                        <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 mb-3 text-sm">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 mb-4 text-base">
                                             <i class="fa-solid fa-building-columns"></i>
                                         </div>
-                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">3. Industry Intelligence</h4>
-                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Active Recruiter Demands</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Unbiased Blind Hiring</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Institutional Feedback</li>
+                                        <h4 class="font-bold text-slate-900 text-base mb-3">3. Industry Intelligence</h4>
+                                        <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2"></i>Active Recruiter Demands</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2"></i>Unbiased Blind Hiring</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2"></i>Institutional Feedback</li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- Card 4: Verified Placements -->
-                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-6 text-left transition card-hover flex flex-col justify-between">
                                     <div>
-                                        <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 mb-3 text-sm">
+                                        <div class="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 mb-4 text-base">
                                             <i class="fa-solid fa-briefcase"></i>
                                         </div>
-                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">4. Verified Placements</h4>
-                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>AI Matched Opportunities</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>NAPS 2.0 Internships</li>
-                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>1-Click APAAR Apply</li>
+                                        <h4 class="font-bold text-slate-900 text-base mb-3">4. Verified Placements</h4>
+                                        <ul class="text-xs space-y-2 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2"></i>AI Matched Opportunities</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2"></i>NAPS 2.0 Internships</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2"></i>1-Click APAAR Apply</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- FREQUENTLY ASKED QUESTIONS SECTION -->
-                        <div class="max-w-4xl mx-auto mb-10 text-center">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-800 block mb-1">Clear Answers to Real User Questions</span>
+                        <!-- FAQ Section -->
+                        <div class="w-full mb-10 text-center">
+                            <span class="text-xs font-bold uppercase tracking-widest text-cyan-800 block mb-1">Clear Answers to Real User Questions</span>
                             <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2">Frequently Asked Questions</h2>
-                            <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto mb-8 leading-relaxed">
+                            <p class="text-sm sm:text-base text-slate-500 w-full max-w-2xl mx-auto mb-8 leading-relaxed">
                                 Everything you need to know about APAAR credit transfers, AI gap audits, and industry recruiting.
                             </p>
 
-                            <div class="space-y-3 text-left">
-                                <!-- FAQ 1 -->
-                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                            <div class="space-y-4 text-left w-full">
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-5 shadow-sm transition w-full">
                                     <button type="button" onclick="App.toggleFaq(1)" class="w-full flex justify-between items-center text-left focus:outline-none">
-                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
-                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                        <span class="text-sm sm:text-base font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-3 text-lg"></i>
                                             How are my course completion points transferred to my official APAAR / ABC Passport?
                                         </span>
                                         <i id="faq-icon-1" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
                                     </button>
-                                    <div id="faq-ans-1" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                    <div id="faq-ans-1" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs sm:text-sm text-slate-600 leading-relaxed">
                                         When you pass an accredited curriculum quiz or 20-question competency examination with a score &ge; 60%, the academic credits (e.g., 3 to 4 NEP credits) are verified and transferred to your National Academic Bank of Credits (ABC) repository linked with your 12-digit APAAR ID.
                                     </div>
                                 </div>
 
-                                <!-- FAQ 2 -->
-                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-5 shadow-sm transition w-full">
                                     <button type="button" onclick="App.toggleFaq(2)" class="w-full flex justify-between items-center text-left focus:outline-none">
-                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
-                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                        <span class="text-sm sm:text-base font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-3 text-lg"></i>
                                             How does Unbiased (Blind) Hiring ensure fair evaluation for candidates?
                                         </span>
                                         <i id="faq-icon-2" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
                                     </button>
-                                    <div id="faq-ans-2" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                    <div id="faq-ans-2" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs sm:text-sm text-slate-600 leading-relaxed">
                                         When recruiters toggle Unbiased (Blind) Hiring mode, candidate personal identifiers (name and avatar photo) are automatically masked. Recruiters review applications purely based on verified skills, assessment scores, GitHub code telemetry, and APAAR credential records.
                                     </div>
                                 </div>
 
-                                <!-- FAQ 3 -->
-                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-5 shadow-sm transition w-full">
                                     <button type="button" onclick="App.toggleFaq(3)" class="w-full flex justify-between items-center text-left focus:outline-none">
-                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
-                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                        <span class="text-sm sm:text-base font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-3 text-lg"></i>
                                             How does the AI Syllabus Auditor help faculty keep curriculums updated?
                                         </span>
                                         <i id="faq-icon-3" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
                                     </button>
-                                    <div id="faq-ans-3" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                    <div id="faq-ans-3" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs sm:text-sm text-slate-600 leading-relaxed">
                                         The AI Syllabus Auditor scans submitted syllabus text against real-time industry recruiter demands across Engineering, AYUSH, Management, and Law. It identifies curriculum deficits and recommends credit-bearing modules (e.g., Spring Boot, Pharmacovigilance) to bridge institutional gaps immediately.
                                     </div>
                                 </div>
 
-                                <!-- FAQ 4 -->
-                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-5 shadow-sm transition w-full">
                                     <button type="button" onclick="App.toggleFaq(4)" class="w-full flex justify-between items-center text-left focus:outline-none">
-                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
-                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                        <span class="text-sm sm:text-base font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-3 text-lg"></i>
                                             What happens if a recruiter rejects my application due to a missing skill?
                                         </span>
                                         <i id="faq-icon-4" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
                                     </button>
-                                    <div id="faq-ans-4" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                    <div id="faq-ans-4" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs sm:text-sm text-slate-600 leading-relaxed">
                                         Whenever a recruiter rejects an application specifying a missing skill, the candidate is routed an AI-generated recovery roadmap with accredited NPTEL/SWAYAM coursework to acquire that skill. Concurrently, an alert is dispatched to the candidate's affiliated institution to address the trend.
                                     </div>
                                 </div>
@@ -846,6 +821,7 @@ const App = {
             }
         }
     },
+
     showLogin: function (role) {
         const app = document.getElementById('app');
         const roleConfig = {
@@ -895,9 +871,9 @@ const App = {
         }
 
         app.innerHTML = `
-            <div class="min-h-screen flex flex-col justify-center items-center p-4 relative framer-reveal">
+            <div class="min-h-screen w-full flex flex-col justify-center items-center p-6 relative framer-reveal">
                 <div class="mb-6">${this.getLogoHtml('large')}</div>
-                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-md border border-cyan-200/70 z-10 relative">
+                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-xl border border-cyan-200/70 z-10 relative">
                     ${this.getCloseButton('App.render()')}
                     <div class="text-center mb-6 pr-4">
                         <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-cyan-50 text-cyan-700 flex items-center justify-center text-2xl border border-cyan-200">
@@ -934,16 +910,16 @@ const App = {
         const app = document.getElementById('app');
         let extraFields = '';
         if (role === 'student') {
-            extraFields = `<div><label class="block text-xs font-bold uppercase text-slate-600 mb-1">APAAR / ABC ID (12 Digits)</label><input type="text" id="regApaar" required placeholder="e.g. 8942-7712-4401" class="w-full px-4 py-2 text-sm"></div>`;
+            extraFields = `<div><label class="block text-xs font-bold uppercase text-slate-600 mb-1">APAAR / ABC ID (12 Digits)</label><input type="text" id="regApaar" required placeholder="e.g. [Aadhaar Omitted]" class="w-full px-4 py-2 text-sm"></div>`;
         } else if (role === 'academician') {
             extraFields = `<div><label class="block text-xs font-bold uppercase text-slate-600 mb-1">Affiliated University / College</label><input type="text" id="regInstitution" required placeholder="e.g. National Institute of Ayurveda / PICT" class="w-full px-4 py-2 text-sm"></div>`;
         } else {
             extraFields = `<div><label class="block text-xs font-bold uppercase text-slate-600 mb-1">Company / R&D Facility</label><input type="text" id="regCompany" required placeholder="e.g. Dabur Healthcare Labs / TechCorp" class="w-full px-4 py-2 text-sm"></div>`;
         }
         app.innerHTML = `
-            <div class="min-h-screen flex flex-col justify-center items-center p-4 relative framer-reveal">
+            <div class="min-h-screen w-full flex flex-col justify-center items-center p-6 relative framer-reveal">
                 <div class="mb-4">${this.getLogoHtml('large')}</div>
-                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-lg border border-cyan-200/70 z-10 relative">
+                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-xl border border-cyan-200/70 z-10 relative">
                     ${this.getCloseButton('App.render()')}
                     <h2 class="text-xl font-bold text-slate-800 mb-1 pr-6">Register New Account</h2>
                     <p class="text-xs text-slate-500 mb-6">Connect to the National Collaborative Skill Database</p>
@@ -962,16 +938,13 @@ const App = {
         `;
     },
 
-    // --- SYNCHRONIZED AUTHENTICATION (PostgreSQL PopSQL + In-Memory Fallback) ---
     handleLogin: async function (e, role) {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        // 1. Check local seed users first (instant for student@demo.com, engineering@demo.com, medical@demo.com, academic@demo.com, industry@demo.com)
         let user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
 
-        // 2. If not found in local memory, check PostgreSQL via server.py
         if (!user && email) {
             try {
                 const res = await fetch('http://127.0.0.1:8000/api/login', {
@@ -1026,7 +999,6 @@ const App = {
         if (DB.users.some(u => u.email.toLowerCase() === email.toLowerCase())) { this.showToast('This email is already registered!', 'error'); return; }
         const newUser = { id: DB.users.length + 1, name: document.getElementById('regName').value.trim(), email, password: document.getElementById('regPassword').value, role, skills: [], projects: [], domain: '', targetRole: '', matchScore: 0, apaarId: document.getElementById('regApaar') ? document.getElementById('regApaar').value : null, apaarVerified: true, institution: document.getElementById('regInstitution') ? document.getElementById('regInstitution').value : null, company: document.getElementById('regCompany') ? document.getElementById('regCompany').value : null, abcCredits: 0, profilePhoto: null, linkedin: "", rejections: [], testHistory: {} };
         DB.users.push(newUser); DB.currentUser = newUser; DB.activeStudentTab = 'overview';
-        // Sync new registration to PostgreSQL (visible in PopSQL)
         try {
             fetch('http://127.0.0.1:8000/api/register', {
                 method: 'POST',
@@ -1056,9 +1028,9 @@ const App = {
         let dashboardHtml = user.role === 'student' ? this.renderStudentView(user) : (user.role === 'academician' ? this.renderAcademicianView(user) : this.renderIndustrialistView(user));
 
         app.innerHTML = `
-            <div class="min-h-screen flex flex-col bg-transparent">
-                <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white sticky top-0 z-30 shadow-lg">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            <div class="min-h-screen w-full flex flex-col bg-transparent">
+                <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white sticky top-0 z-30 shadow-lg w-full">
+                    <div class="w-full px-6 sm:px-12 lg:px-16 py-3.5 flex justify-between items-center">
                         ${this.getLogoHtml('normal', 'portal')}
                         <div class="flex items-center space-x-5 text-xs">
                             <div class="flex items-center space-x-3">
@@ -1072,10 +1044,10 @@ const App = {
                         </div>
                     </div>
                 </header>
-                <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full z-10 relative">
+                <main class="w-full px-6 sm:px-12 lg:px-16 py-8 flex-1 z-10 relative">
                     ${dashboardHtml}
                 </main>
-                <footer class="bg-slate-950/90 backdrop-blur-md border-t border-cyan-950/60 text-slate-400 text-xs py-4 text-center z-10">SkillBridge • Ministry of AYUSH, AICTE & NEP-2020 Academic Bank of Credits (ABC) Aligned Ecosystem</footer>
+                <footer class="bg-slate-950/90 backdrop-blur-md border-t border-cyan-950/60 text-slate-400 text-xs py-4 text-center z-10 w-full">SkillBridge • Ministry of AYUSH, AICTE & NEP-2020 Academic Bank of Credits (ABC) Aligned Ecosystem</footer>
             </div>
         `;
     },
@@ -1090,8 +1062,8 @@ const App = {
             : 'bg-white/70 hover:bg-cyan-50/60 text-slate-600 font-medium border border-cyan-100/80';
 
         return `
-            <div class="space-y-6">
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-5 flex flex-wrap justify-between items-center gap-4">
+            <div class="space-y-6 w-full">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 flex flex-wrap justify-between items-center gap-4 w-full">
                     <div class="flex items-center space-x-4">
                         ${this.getAvatarHtml(user, 'w-14 h-14', 'text-xl', 'border-2 border-cyan-400')}
                         <div>
@@ -1101,7 +1073,7 @@ const App = {
                                     <i class="fa-solid fa-circle-check text-teal-600"></i> APAAR VERIFIED
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-500 font-mono">APAAR ID: ${user.apaarId || '8942-7712-4401'} • Domain: <strong class="text-slate-700 uppercase">${user.domain}</strong></p>
+                            <p class="text-xs text-slate-500 font-mono">APAAR ID: ${user.apaarId || '[Aadhaar Omitted]'} • Domain: <strong class="text-slate-700 uppercase">${user.domain}</strong></p>
                             <p class="text-xs text-slate-600 mt-1">
                                 <i class="fa-solid fa-bullseye text-cyan-600 mr-1"></i> Target Goal / Role: 
                                 <strong class="text-slate-800">${user.targetRole || 'Not Specified'}</strong>
@@ -1127,7 +1099,7 @@ const App = {
                     </div>
                 </div>
 
-                <div id="student-tab-navigation" class="flex flex-wrap gap-2 border-b border-cyan-100 pb-3">
+                <div id="student-tab-navigation" class="flex flex-wrap gap-2 border-b border-cyan-100 pb-3 w-full">
                     <button data-tab="progress" onclick="App.setStudentTab('progress')" class="px-4 py-2 text-xs rounded-full transition-all duration-200 flex items-center ${tabBtnStyle('progress')}">
                         <i class="fa-solid fa-bars-progress mr-2"></i> Progress Check
                         ${user.hiringStatus === 'Hired' ? '<span class="ml-1.5 w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>' : ''}
@@ -1154,7 +1126,7 @@ const App = {
                     </button>
                 </div>
 
-                <div id="student-tab-content" class="mt-4 tab-pane-fade">
+                <div id="student-tab-content" class="mt-4 tab-pane-fade w-full">
                     ${this.renderCurrentStudentTabContent(user, currentTab)}
                 </div>
             </div>
@@ -1177,13 +1149,13 @@ const App = {
 
     renderStudentOverviewTab: function (user) {
         const rejectionsHtml = (user.rejections && user.rejections.length > 0) ? `
-            <div class="lg:col-span-3 glass-card rounded-2xl shadow-sm border border-rose-200 p-6 space-y-4 mt-2 card-hover">
+            <div class="w-full glass-card rounded-2xl shadow-sm border border-rose-200 p-6 space-y-4 mt-2 card-hover">
                 <div class="flex justify-between items-center border-b border-rose-100 pb-3">
                     <h3 class="font-bold text-rose-800 flex items-center text-sm">
                         <i class="fa-solid fa-triangle-exclamation mr-2"></i> Industry Application Feedback & AI Recovery Roadmaps
                     </h3>
                 </div>
-                <div class="grid md:grid-cols-2 gap-4">
+                <div class="grid md:grid-cols-2 gap-4 w-full">
                     ${user.rejections.map(r => `
                         <div class="bg-rose-50/60 border border-rose-100 p-4 rounded-xl text-xs space-y-2">
                             <p class="text-slate-700"><strong>Reviewing Company:</strong> ${r.company}</p>
@@ -1205,9 +1177,9 @@ const App = {
         ` : '';
 
         return `
-            <div class="space-y-6">
-                <div class="grid lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 glass-card rounded-2xl shadow-sm border border-cyan-200/70 p-6 space-y-4 card-hover">
+            <div class="space-y-6 w-full">
+                <div class="grid lg:grid-cols-3 gap-6 w-full">
+                    <div class="lg:col-span-2 glass-card rounded-2xl shadow-sm border border-cyan-200/70 p-6 space-y-4 card-hover w-full">
                         <div class="flex justify-between items-center border-b border-cyan-100 pb-3">
                             <h3 class="font-bold text-slate-800 flex items-center text-sm">
                                 <i class="fa-solid fa-microchip text-cyan-600 mr-2"></i> AI Skill-Gap Analysis & Telemetry Audit
@@ -1222,7 +1194,7 @@ const App = {
                             </div>
                         </div>
 
-                        <div class="grid sm:grid-cols-2 gap-4 text-xs">
+                        <div class="grid sm:grid-cols-2 gap-4 text-xs w-full">
                             <div class="p-3.5 bg-cyan-50/40 rounded-xl border border-cyan-100">
                                 <span class="font-bold text-slate-700 block mb-1">
                                     <i class="fa-solid ${user.domain === 'engineering' ? 'fa-brands fa-github' : 'fa-award'} text-slate-800 mr-1"></i> 
@@ -1251,7 +1223,7 @@ const App = {
                         </div>
                     </div>
 
-                    <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 shadow-sm flex flex-col justify-between backdrop-blur-md border border-slate-800 card-dark-hover">
+                    <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-white rounded-2xl p-6 shadow-sm flex flex-col justify-between backdrop-blur-md border border-slate-800 card-dark-hover w-full">
                         <div>
                             <h3 class="text-sm font-bold text-cyan-400 flex items-center mb-4">
                                 <i class="fa-solid fa-route mr-2"></i> NEP-2020 Fresher Career Roadmap
@@ -1276,7 +1248,6 @@ const App = {
         `;
     },
 
-    // ==================== COURSES & 20-Q ASSESSMENTS TAB ====================
     renderStudentCoursesTab: function (user) {
         const domainCourses = DB.courses.filter(c => c.domain === user.domain || c.domain === 'engineering');
         const userDomainLabel = (user.domain || 'ayush').toUpperCase();
@@ -1284,9 +1255,8 @@ const App = {
         const roleHistory = user.testHistory ? user.testHistory['role'] : null;
 
         return `
-            <div class="space-y-6">
-                <!-- 20-Question Mandatory Assessments Section with Retake Capability -->
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/70 p-6 space-y-4">
+            <div class="space-y-6 w-full">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/70 p-6 space-y-4 w-full">
                     <div class="flex flex-wrap justify-between items-center gap-2 border-b border-cyan-100 pb-3">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -1299,8 +1269,7 @@ const App = {
                         </span>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-5">
-                        <!-- Assessment 1: General Aptitude -->
+                    <div class="grid md:grid-cols-2 gap-5 w-full">
                         <div class="border border-cyan-200/60 rounded-2xl p-5 card-hover bg-white/90 flex flex-col justify-between">
                             <div>
                                 <div class="flex justify-between items-center mb-2">
@@ -1327,7 +1296,6 @@ const App = {
                             `}
                         </div>
 
-                        <!-- Assessment 2: Career Domain Assessment -->
                         <div class="border border-teal-200/70 rounded-2xl p-5 card-hover bg-white/90 flex flex-col justify-between">
                             <div>
                                 <div class="flex justify-between items-center mb-2">
@@ -1356,51 +1324,7 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Learning Progress Widgets -->
-                <div class="grid sm:grid-cols-3 gap-4">
-                    <div class="glass-card rounded-2xl p-5 border border-cyan-200/60 shadow-sm flex flex-col justify-between card-hover">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold uppercase text-slate-500">Course Progress</span>
-                            <span class="text-xs font-bold text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full">83% Completed</span>
-                        </div>
-                        <div class="flex items-baseline space-x-2 my-1">
-                            <span class="text-2xl font-extrabold text-slate-900">83%</span>
-                            <span class="text-xs text-slate-500">overall mastery</span>
-                        </div>
-                        <div class="w-full bg-slate-200/60 rounded-full h-2 mt-2">
-                            <div class="bg-cyan-500 h-2 rounded-full" style="width: 83%"></div>
-                        </div>
-                    </div>
-
-                    <div class="glass-card rounded-2xl p-5 border border-cyan-200/60 shadow-sm flex flex-col justify-between card-hover">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold uppercase text-slate-500">Learning Streak</span>
-                            <span class="text-xs font-bold text-teal-800 bg-teal-50 px-2.5 py-1 rounded-full"><i class="fa-solid fa-fire text-teal-500 mr-1"></i> 14 Days</span>
-                        </div>
-                        <div class="flex items-baseline space-x-2 my-1">
-                            <span class="text-2xl font-extrabold text-slate-900">14 Days</span>
-                            <span class="text-xs text-teal-600 font-semibold">Active Streak</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 mt-2">You're on fire! Next milestone at 20 days.</p>
-                    </div>
-
-                    <div class="glass-card rounded-2xl p-5 border border-cyan-200/60 shadow-sm flex flex-col justify-between card-hover">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold uppercase text-slate-500">Target Daily Goal</span>
-                            <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">45 Mins Daily</span>
-                        </div>
-                        <div class="flex items-baseline space-x-2 my-1">
-                            <span class="text-2xl font-extrabold text-slate-900">38 / 45m</span>
-                            <span class="text-xs text-slate-500">completed today</span>
-                        </div>
-                        <div class="w-full bg-slate-200/60 rounded-full h-2 mt-2">
-                            <div class="bg-teal-600 h-2 rounded-full" style="width: 84%"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Existing Recommended Curriculums -->
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6 w-full">
                     <div class="flex flex-wrap justify-between items-center gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -1413,7 +1337,7 @@ const App = {
                         </span>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="grid md:grid-cols-2 gap-4 w-full">
                         ${domainCourses.map(c => `
                             <div class="border border-cyan-200/50 rounded-2xl p-5 card-hover bg-white/80 flex flex-col justify-between">
                                 <div>
@@ -1439,7 +1363,6 @@ const App = {
         `;
     },
 
-    // ==================== 20-QUESTION TEST RUNTIME ENGINE ====================
     launchTest: function (testType) {
         const user = DB.currentUser;
         if (!user) return;
@@ -1473,7 +1396,7 @@ const App = {
         const app = document.getElementById('app');
 
         app.innerHTML = `
-            <div class="max-w-3xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-8 framer-reveal">
+            <div class="w-full max-w-4xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-8 framer-reveal">
                 ${this.getCloseButton('App.render()')}
                 
                 <div class="flex items-center justify-between border-b border-cyan-100 pb-4 mb-6 pr-6">
@@ -1597,7 +1520,6 @@ const App = {
 
         this.lastTestResult = testResult;
 
-        // Persist in user session history
         const user = DB.currentUser;
         if (user) {
             if (!user.testHistory) user.testHistory = {};
@@ -1611,14 +1533,14 @@ const App = {
     downloadScoreReport: function () {
         const res = this.lastTestResult;
         if (!res) return;
-        const user = DB.currentUser || { name: "Student", apaarId: "N/A" };
+        const user = DB.currentUser || { name: "Student", apaarId: "[Aadhaar Omitted]" };
 
         let content = `========================================================================\n`;
         content += `      SKILLBRIDGE NATIONAL ASSESSMENT & SCORE DIAGNOSTIC REPORT         \n`;
         content += `         Aligned with Ministry of Education & NEP-2020 Framework        \n`;
         content += `========================================================================\n\n`;
         content += `Candidate Name     : ${user.name}\n`;
-        content += `APAAR / ABC ID     : ${user.apaarId || '8942-7712-4401'}\n`;
+        content += `APAAR / ABC ID     : ${user.apaarId || '[Aadhaar Omitted]'}\n`;
         content += `Assessment Type    : ${res.testType === 'aptitude' ? 'National General Aptitude Test' : res.domain.toUpperCase() + ' Role Competency Examination'}\n`;
         content += `Date Completed     : ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}\n`;
         content += `Status             : COMPLETED & SUBMITTED\n\n`;
@@ -1672,10 +1594,9 @@ const App = {
         this.lastTestResult = results;
         const app = document.getElementById('app');
         app.innerHTML = `
-            <div class="max-w-4xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-8 framer-reveal">
+            <div class="w-full max-w-5xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-8 framer-reveal">
                 ${this.getCloseButton('App.render()')}
                 
-                <!-- Submission Header -->
                 <div class="border-b border-cyan-100 pb-5 mb-6 pr-6">
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-100 text-teal-800 border border-teal-200 mb-2">
                         <i class="fa-solid fa-circle-check text-teal-600"></i> Test Completed & Submitted
@@ -1686,8 +1607,7 @@ const App = {
                     <p class="text-xs text-slate-500 mt-1">Detailed evaluation of analytical proficiencies and targeted areas requiring academic improvement.</p>
                 </div>
 
-                <!-- Score Summary Cards -->
-                <div class="grid sm:grid-cols-3 gap-4 mb-6">
+                <div class="grid sm:grid-cols-3 gap-4 mb-6 w-full">
                     <div class="p-4 bg-white/90 rounded-2xl border border-cyan-100 text-center shadow-sm">
                         <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Final Score</span>
                         <span class="text-3xl font-extrabold text-cyan-700">${results.score} / ${results.total}</span>
@@ -1709,9 +1629,7 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Strengths vs Gap Areas (Where good vs lacking) -->
-                <div class="grid md:grid-cols-2 gap-5 mb-8">
-                    <!-- Where they are good -->
+                <div class="grid md:grid-cols-2 gap-5 mb-8 w-full">
                     <div class="bg-teal-50/50 border border-teal-200/80 rounded-2xl p-5 shadow-sm">
                         <h4 class="text-xs font-bold text-teal-900 uppercase tracking-wide mb-3 flex items-center">
                             <i class="fa-solid fa-circle-check text-teal-600 mr-2 text-sm"></i> Where You Are Good (Score &ge; 75%)
@@ -1728,7 +1646,6 @@ const App = {
                         ` : '<p class="text-xs text-slate-500 italic">No individual topic scored &ge; 75%. Comprehensive review advised.</p>'}
                     </div>
 
-                    <!-- Where they are lacking -->
                     <div class="bg-rose-50/50 border border-rose-200/80 rounded-2xl p-5 shadow-sm">
                         <h4 class="text-xs font-bold text-rose-900 uppercase tracking-wide mb-3 flex items-center">
                             <i class="fa-solid fa-triangle-exclamation text-rose-600 mr-2 text-sm"></i> Areas Needing Improvement (Score &lt; 75%)
@@ -1746,12 +1663,11 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Detailed Question Review & Rationales -->
-                <div class="space-y-4">
+                <div class="space-y-4 w-full">
                     <h4 class="text-sm font-bold text-slate-900 flex items-center">
                         <i class="fa-solid fa-list-check text-cyan-600 mr-2"></i> Comprehensive Question Review & Rationales
                     </h4>
-                    <div class="space-y-3">
+                    <div class="space-y-3 w-full">
                         ${results.review.map((item, idx) => `
                             <div class="p-4 rounded-xl border ${item.isCorrect ? 'border-teal-200 bg-white/80' : 'border-rose-200 bg-rose-50/30'}">
                                 <div class="flex justify-between items-start mb-2">
@@ -1772,7 +1688,6 @@ const App = {
                     </div>
                 </div>
 
-                <!-- Footer Action Buttons: Back, Download Report, and Retake -->
                 <div class="mt-8 pt-5 border-t border-cyan-100 flex flex-wrap items-center justify-between gap-3">
                     <button onclick="App.render()" class="px-5 py-2.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
                         &larr; Back to Courses
@@ -1793,7 +1708,7 @@ const App = {
 
     renderStudentGithubTab: function (user) {
         return `
-            <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6">
+            <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6 w-full">
                 <div class="flex justify-between items-center border-b border-cyan-100 pb-4">
                     <div>
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -1806,7 +1721,7 @@ const App = {
                     </button>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid md:grid-cols-3 gap-4 w-full">
                     <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 text-center card-hover">
                         <span class="text-xs font-bold text-slate-500 uppercase block">Linked Repository</span>
                         <a href="${user.github || '#'}" target="_blank" class="text-xs font-bold text-cyan-600 underline truncate block mt-1">
@@ -1823,7 +1738,7 @@ const App = {
                     </div>
                 </div>
 
-                <div class="p-4 bg-slate-900 text-slate-200 rounded-2xl font-mono text-xs space-y-2">
+                <div class="p-4 bg-slate-900 text-slate-200 rounded-2xl font-mono text-xs space-y-2 w-full">
                     <div class="text-cyan-400 font-bold">$ git-audit --target=${user.github || 'user-repo'} --deep-scan</div>
                     <div class="text-slate-400">> Fetching repository AST and metadata...</div>
                     <div class="text-teal-400">> 0 Syntax Errors | 0 Security Vulnerabilities Found</div>
@@ -1838,8 +1753,8 @@ const App = {
         const domainQuestions = INTERVIEW_QUESTIONS_BANK[user.domain] || INTERVIEW_QUESTIONS_BANK.ayush;
 
         return `
-            <div class="space-y-6">
-                <div class="bg-gradient-to-r from-slate-900 via-cyan-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden border border-cyan-900/50">
+            <div class="space-y-6 w-full">
+                <div class="bg-gradient-to-r from-slate-900 via-cyan-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg relative overflow-hidden border border-cyan-900/50 w-full">
                     <div class="relative z-10 flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <div class="inline-flex items-center space-x-2 bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 px-3 py-1 rounded-full text-[11px] font-semibold mb-2">
@@ -1859,14 +1774,14 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <div class="flex justify-between items-center">
                         <h3 class="text-sm font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-star text-cyan-500 mr-2"></i> Candidate Success Stories & Placements
                         </h3>
                         <span class="text-xs text-slate-500 font-medium">Verified by National Placement Cell</span>
                     </div>
-                    <div class="grid md:grid-cols-3 gap-4">
+                    <div class="grid md:grid-cols-3 gap-4 w-full">
                         <div class="bg-white/80 border border-cyan-100 rounded-2xl p-4 card-hover relative">
                             <div class="flex items-center space-x-3 mb-3">
                                 <div class="w-10 h-10 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-sm">AS</div>
@@ -1920,7 +1835,7 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6 w-full">
                     <div class="flex flex-wrap justify-between items-center border-b border-cyan-100 pb-4 gap-2">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -1938,7 +1853,7 @@ const App = {
                         </div>
                     </div>
 
-                    <div class="grid lg:grid-cols-3 gap-6">
+                    <div class="grid lg:grid-cols-3 gap-6 w-full">
                         <div class="bg-slate-900 rounded-2xl p-4 text-white flex flex-col justify-between h-72 relative overflow-hidden shadow-inner border border-slate-800">
                             <div class="flex justify-between items-center z-10">
                                 <span class="bg-rose-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full text-white tracking-wide">Camera Ready</span>
@@ -2001,8 +1916,8 @@ const App = {
         const linkedInHtml = user.linkedin ? ` | <a href="${user.linkedin}" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-600 transition inline-flex items-center"><i class="fa-brands fa-linkedin mx-1"></i> LinkedIn</a>` : '';
 
         return `
-            <div class="space-y-6">
-                <div class="bg-gradient-to-r from-slate-900 via-cyan-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg flex flex-wrap justify-between items-center gap-4 border border-cyan-900/40">
+            <div class="space-y-6 w-full">
+                <div class="bg-gradient-to-r from-slate-900 via-cyan-950 to-slate-900 text-white rounded-2xl p-6 shadow-lg flex flex-wrap justify-between items-center gap-4 border border-cyan-900/40 w-full">
                     <div>
                         <div class="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-300 border border-teal-400/30 px-3 py-1 rounded-full text-[11px] font-semibold mb-2">
                             <i class="fa-solid fa-sparkles text-cyan-400"></i>
@@ -2027,14 +1942,14 @@ const App = {
                     </div>
                 </div>
 
-                <div id="ai-resume-feedback-box" class="hidden glass-card rounded-2xl shadow-sm border border-teal-300/80 p-6 space-y-4 bg-teal-50/20">
+                <div id="ai-resume-feedback-box" class="hidden glass-card rounded-2xl shadow-sm border border-teal-300/80 p-6 space-y-4 bg-teal-50/20 w-full">
                     <div class="flex justify-between items-center border-b border-teal-200/60 pb-3">
                         <h3 class="text-sm font-bold text-teal-900 flex items-center">
                             <i class="fa-solid fa-circle-check text-teal-600 mr-2"></i> AI Resume Audit & Suggested Improvements (SIH-2026 Coral Engine)
                         </h3>
                         <span class="bg-teal-100 text-teal-900 text-xs font-bold px-3 py-1 rounded-full">ATS Score: 92/100</span>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-4 text-xs text-slate-700">
+                    <div class="grid md:grid-cols-2 gap-4 text-xs text-slate-700 w-full">
                         <div class="bg-white/90 p-4 rounded-2xl border border-teal-200/60 space-y-2">
                             <h4 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1.5"></i> Suggested Enhancements:</h4>
                             <ul class="list-disc list-inside space-y-1 text-slate-600">
@@ -2046,7 +1961,7 @@ const App = {
                         <div class="bg-white/90 p-4 rounded-2xl border border-teal-200/60 space-y-2">
                             <h4 class="font-bold text-slate-900 flex items-center"><i class="fa-solid fa-check text-teal-600 mr-1.5"></i> Automatically Applied Fixes:</h4>
                             <ul class="list-disc list-inside space-y-1 text-slate-600">
-                                <li>Header updated with verified APAAR ID badge <code>${user.apaarId || '8942-7712-4401'}</code>.</li>
+                                <li>Header updated with verified APAAR ID badge <code>${user.apaarId || '[Aadhaar Omitted]'}</code>.</li>
                                 <li>Active skill tags aligned with target role <strong class="text-slate-800">${user.targetRole || 'Professional'}</strong>.</li>
                                 <li>Academic credit summary integrated at top-right.</li>
                             </ul>
@@ -2054,7 +1969,7 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6 w-full">
                     <div class="flex justify-between items-center border-b border-cyan-100 pb-4">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -2067,7 +1982,7 @@ const App = {
                         </button>
                     </div>
 
-                    <div class="bg-white p-6 rounded-2xl border border-cyan-100 shadow-sm space-y-5">
+                    <div class="bg-white p-6 rounded-2xl border border-cyan-100 shadow-sm space-y-5 w-full">
                         <div class="flex justify-between items-start border-b border-slate-200 pb-4">
                             <div class="flex items-center space-x-4">
                                 ${this.getAvatarHtml(user, 'w-16 h-16', 'text-2xl')}
@@ -2084,7 +1999,7 @@ const App = {
                             </div>
                             <div class="text-right">
                                 <span class="inline-block bg-teal-50 text-teal-800 text-[11px] font-bold px-3 py-1 rounded-full border border-teal-200">
-                                    APAAR Verified: ${user.apaarId || '8942-7712-4401'}
+                                    APAAR Verified: ${user.apaarId || '[Aadhaar Omitted]'}
                                 </span>
                                 <p class="text-xs font-bold text-slate-700 mt-1">${user.abcCredits || 24} ABC Credits Accumulated</p>
                             </div>
@@ -2152,8 +2067,8 @@ const App = {
         const selectedJob = DB.selectedJob;
 
         return `
-            <div class="space-y-6">
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6">
+            <div class="space-y-6 w-full">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-6 w-full">
                     <div class="flex justify-between items-center border-b border-cyan-100 pb-3">
                         <div>
                             <h3 class="text-base font-bold text-slate-800 flex items-center">
@@ -2166,7 +2081,7 @@ const App = {
                         </span>
                     </div>
 
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid md:grid-cols-2 gap-6 w-full">
                         <div>
                             <h4 class="text-xs font-bold uppercase text-slate-700 mb-3 flex items-center">
                                 <i class="fa-solid fa-laptop-code text-cyan-600 mr-2"></i> Internships
@@ -2251,7 +2166,7 @@ const App = {
     renderJobDetailModal: function (job, user) {
         const matchPct = user.matchScore || 88;
         return `
-            <div class="glass-card rounded-2xl shadow-2xl border-2 border-cyan-500 p-6 space-y-6 relative animate-fadeIn framer-reveal">
+            <div class="glass-card rounded-2xl shadow-2xl border-2 border-cyan-500 p-6 space-y-6 relative animate-fadeIn framer-reveal w-full">
                 <button onclick="DB.selectedJob = null; App.setStudentTab('opportunities');" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -2270,7 +2185,7 @@ const App = {
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-4">
+                <div class="grid md:grid-cols-3 gap-4 w-full">
                     <div class="bg-white/90 p-4 rounded-2xl border border-cyan-100 space-y-2">
                         <h4 class="text-xs font-bold uppercase text-slate-700 flex items-center"><i class="fa-solid fa-bullseye text-cyan-600 mr-1.5"></i> Role Description</h4>
                         <p class="text-xs text-slate-600 leading-relaxed">${job.description || 'Enterprise grade research and engineering position aligned with national quality frameworks.'}</p>
@@ -2315,7 +2230,7 @@ const App = {
         const preset = DOMAIN_PRESETS[currentDomain] || DOMAIN_PRESETS.ayush;
 
         return `
-            <div class="max-w-3xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative mt-10 mb-10 framer-reveal">
+            <div class="w-full max-w-4xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative mt-10 mb-10 framer-reveal">
                 ${this.getCloseButton('App.logout()')}
                 <div class="text-center mb-6 pr-6">
                     <span class="text-xs font-bold uppercase tracking-widest text-cyan-700">Step 1 of 1: Skill Profiling & National Verification</span>
@@ -2323,8 +2238,8 @@ const App = {
                     <p class="text-xs text-slate-500 mt-1">Select your specialized discipline, link your APAAR credentials, research papers, and target career goal for automated AI evaluation.</p>
                 </div>
 
-                <form onsubmit="App.saveStudentProfile(event)" class="space-y-4">
-                    <div class="grid sm:grid-cols-2 gap-4">
+                <form onsubmit="App.saveStudentProfile(event)" class="space-y-4 w-full">
+                    <div class="grid sm:grid-cols-2 gap-4 w-full">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Academic / Medical Domain</label>
                             <select id="formDomain" required onchange="App.handleDomainChange(this.value)" class="w-full px-3.5 py-2 text-sm">
@@ -2340,7 +2255,7 @@ const App = {
                         </div>
                     </div>
 
-                    <div class="grid sm:grid-cols-2 gap-4 items-center">
+                    <div class="grid sm:grid-cols-2 gap-4 items-center w-full">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Target Career Role / Goal</label>
                             <input type="text" id="formTargetRole" required placeholder="e.g. Senior Clinical AYUSH Researcher" value="${user.targetRole || preset.targetRole}" class="w-full px-3.5 py-2 text-sm">
@@ -2359,10 +2274,10 @@ const App = {
                         </div>
                     </div>
 
-                    <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="grid sm:grid-cols-2 gap-4 w-full">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">APAAR / ABC Student ID</label>
-                            <input type="text" id="formApaar" required value="${user.apaarId || '8942-7712-4401'}" placeholder="XXXX-XXXX-XXXX" class="w-full px-3.5 py-2 text-sm font-mono">
+                            <input type="text" id="formApaar" required value="${user.apaarId || '[Aadhaar Omitted]'}" placeholder="XXXX-XXXX-XXXX" class="w-full px-3.5 py-2 text-sm font-mono">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">GitHub URL (Optional for Non-Eng)</label>
@@ -2390,7 +2305,7 @@ const App = {
                         <input type="text" id="formProjects" required value="${(user.projects && user.projects.length > 0) ? user.projects.join(', ') : preset.projects}" placeholder="e.g. Automated Herbal Extraction QA Pipeline" class="w-full px-3.5 py-2 text-sm">
                     </div>
 
-                    <div class="p-4 bg-cyan-50/50 border border-cyan-200/80 rounded-2xl space-y-3" id="dynamicQuestionContainer">
+                    <div class="p-4 bg-cyan-50/50 border border-cyan-200/80 rounded-2xl space-y-3 w-full" id="dynamicQuestionContainer">
                         <h4 class="text-xs font-bold uppercase text-slate-700 flex items-center">
                             <i class="fa-solid fa-robot text-cyan-600 mr-1.5"></i> AI Adaptive Technical Inquiry:
                         </h4>
@@ -2482,7 +2397,7 @@ const App = {
 
         const app = document.getElementById('app');
         app.innerHTML = `
-            <div class="max-w-2xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-12 framer-reveal">
+            <div class="w-full max-w-3xl mx-auto glass-card rounded-2xl shadow-xl border border-cyan-200/70 p-8 relative my-12 framer-reveal">
                 ${this.getCloseButton('App.render()')}
                 <div class="mb-6 pr-6">
                     <span class="text-xs font-bold uppercase tracking-widest text-cyan-600">NEP 2020 Accredited Certification Quiz</span>
@@ -2490,9 +2405,9 @@ const App = {
                     <p class="text-xs text-slate-500 mt-1">Passing score unlocks <strong class="text-teal-700">${course.nepCredits} Academic Bank of Credits (ABC)</strong>.</p>
                 </div>
 
-                <form onsubmit="App.submitCourseQuiz(event, ${courseId})" class="space-y-6">
+                <form onsubmit="App.submitCourseQuiz(event, ${courseId})" class="space-y-6 w-full">
                     ${course.quiz.map((q, idx) => `
-                        <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 space-y-3">
+                        <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 space-y-3 w-full">
                             <p class="text-xs font-bold text-slate-800">Q${idx + 1}: ${q.q}</p>
                             <div class="space-y-2">
                                 ${q.options.map((opt, optIdx) => `
@@ -2523,11 +2438,11 @@ const App = {
     showPublishCourseForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
-            <div class="min-h-screen flex flex-col justify-center items-center p-4 relative framer-reveal">
-                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-lg border border-cyan-200/70 z-10 relative">
+            <div class="min-h-screen w-full flex flex-col justify-center items-center p-6 relative framer-reveal">
+                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-xl border border-cyan-200/70 z-10 relative">
                     ${this.getCloseButton('App.render()')}
                     <h2 class="text-xl font-bold text-slate-800 mb-4">Publish New Curriculum</h2>
-                    <form onsubmit="App.handlePublishCourse(event)" class="space-y-4">
+                    <form onsubmit="App.handlePublishCourse(event)" class="space-y-4 w-full">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Course Title</label>
                             <input type="text" id="courseTitle" required class="w-full px-4 py-2 text-sm">
@@ -2536,7 +2451,7 @@ const App = {
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Domain</label>
                             <input type="text" id="courseDomain" required placeholder="e.g. engineering, ayush" class="w-full px-4 py-2 text-sm">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-4 w-full">
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">NEP Credits</label>
                                 <input type="number" id="courseCredits" required class="w-full px-4 py-2 text-sm">
@@ -2638,8 +2553,8 @@ const App = {
         setTimeout(() => App.renderInstitutionalChart(), 50);
 
         return `
-            <div class="space-y-6">
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 flex justify-between items-center card-hover">
+            <div class="space-y-6 w-full">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 flex justify-between items-center card-hover w-full">
                     <div class="flex items-center space-x-4">
                         ${this.getAvatarHtml(user, 'w-12 h-12', 'text-lg', 'border-2 border-teal-400')}
                         <div>
@@ -2654,9 +2569,9 @@ const App = {
                 </div>
 
                 ${DB.institutionalAlerts.length > 0 ? `
-                    <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm space-y-2">
+                    <div class="bg-rose-50 border border-rose-200 rounded-2xl p-4 shadow-sm space-y-2 w-full">
                         <h3 class="text-sm font-bold text-rose-800"><i class="fa-solid fa-bell mr-2"></i> Recruiter Feedback Alerts (Action Required)</h3>
-                        <div class="space-y-2">
+                        <div class="space-y-2 w-full">
                             ${DB.institutionalAlerts.map(alert => `
                                 <div class="bg-white p-3 rounded-xl border border-rose-100 text-xs text-slate-700">
                                     <strong>${alert.company}</strong> noted that candidates from your institution lack: <span class="font-bold text-rose-600">${alert.skill}</span>
@@ -2666,8 +2581,8 @@ const App = {
                     </div>
                 ` : ''}
 
-                <div class="grid lg:grid-cols-2 gap-6">
-                    <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 card-hover">
+                <div class="grid lg:grid-cols-2 gap-6 w-full">
+                    <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 card-hover w-full">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-wand-magic-sparkles text-teal-600 mr-2"></i> AI Syllabus Auditor
                         </h3>
@@ -2679,7 +2594,7 @@ const App = {
                         <div id="syllabusAuditReport" class="hidden mt-4"></div>
                     </div>
 
-                    <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 card-hover">
+                    <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 card-hover w-full">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-chart-bar text-cyan-600 mr-2"></i> Institutional Skill-Gap Analytics
                         </h3>
@@ -2688,18 +2603,18 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <h3 class="text-base font-bold text-slate-800 flex items-center">
                         <i class="fa-solid fa-users text-teal-700 mr-2"></i> Enrolled Students & APAAR Sync
                     </h3>
-                    <div class="space-y-3">
+                    <div class="space-y-3 w-full">
                         ${DB.users.filter(u => u.role === 'student').map(s => `
-                            <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover">
+                            <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover w-full">
                                 <div class="flex items-center space-x-3">
                                     ${this.getAvatarHtml(s, 'w-8 h-8', 'text-[10px]', 'border border-slate-300')}
                                     <div>
                                         <h4 class="font-bold text-slate-900 text-sm">${s.name}</h4>
-                                        <p class="text-xs text-slate-500 font-mono">APAAR ID: ${s.apaarId || '8942-7712-4401'}</p>
+                                        <p class="text-xs text-slate-500 font-mono">APAAR ID: ${s.apaarId || '[Aadhaar Omitted]'}</p>
                                     </div>
                                 </div>
                                 <button onclick="App.mintAbcCredits(${s.id})" class="bg-blue-600 text-white text-[11px] font-bold px-3.5 py-1.5 rounded-full transition shadow-sm flex items-center">
@@ -2710,11 +2625,11 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <h3 class="text-base font-bold text-slate-800 flex items-center">
                         <i class="fa-solid fa-chalkboard-user text-teal-700 mr-2"></i> My Published Courses
                     </h3>
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="grid md:grid-cols-2 gap-4 w-full">
                         ${myCourses.length > 0 ? myCourses.map(c => `
                             <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 space-y-2 card-hover">
                                 <div class="flex justify-between items-start">
@@ -2732,11 +2647,11 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <h3 class="text-base font-bold text-slate-800 flex items-center">
                         <i class="fa-solid fa-globe text-teal-700 mr-2"></i> Courses Published by Other Faculty
                     </h3>
-                    <div class="grid md:grid-cols-2 gap-4">
+                    <div class="grid md:grid-cols-2 gap-4 w-full">
                         ${otherCourses.length > 0 ? otherCourses.map(c => `
                             <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 space-y-2 card-hover">
                                 <div class="flex justify-between items-start">
@@ -2830,11 +2745,11 @@ const App = {
     showPostJobForm: function () {
         const app = document.getElementById('app');
         app.innerHTML = `
-            <div class="min-h-screen flex flex-col justify-center items-center p-4 relative framer-reveal">
-                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-lg border border-cyan-200/70 z-10 relative">
+            <div class="min-h-screen w-full flex flex-col justify-center items-center p-6 relative framer-reveal">
+                <div class="glass-card rounded-2xl shadow-xl p-8 w-full max-w-xl border border-cyan-200/70 z-10 relative">
                     ${this.getCloseButton('App.render()')}
                     <h2 class="text-xl font-bold text-slate-800 mb-4">Post Internship / Placement</h2>
-                    <form onsubmit="App.handlePostJob(event)" class="space-y-4">
+                    <form onsubmit="App.handlePostJob(event)" class="space-y-4 w-full">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Type</label>
                             <select id="jobType" class="w-full px-4 py-2 text-sm">
@@ -2846,7 +2761,7 @@ const App = {
                             <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Job Title</label>
                             <input type="text" id="jobTitle" required class="w-full px-4 py-2 text-sm">
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-2 gap-4 w-full">
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Domain</label>
                                 <input type="text" id="jobDomain" required class="w-full px-4 py-2 text-sm">
@@ -2865,7 +2780,7 @@ const App = {
                             <input type="checkbox" id="napsCompliant" onchange="App.toggleNapsCard()" class="w-4 h-4 text-teal-600">
                             <label class="text-xs font-bold text-slate-700">NAPS 2.0 Compliant (Govt Apprenticeship)</label>
                         </div>
-                        <div id="napsCalcCard" class="hidden bg-teal-50 border border-teal-200 p-3 rounded-2xl text-xs text-teal-800">
+                        <div id="napsCalcCard" class="hidden bg-teal-50 border border-teal-200 p-3 rounded-2xl text-xs text-teal-800 w-full">
                             <i class="fa-solid fa-building-columns mr-1"></i> Under the National Apprenticeship Promotion Scheme, the Government of India will share 25% of this stipend (up to ₹1500).
                             <br><strong>Estimated Govt Coverage: <span id="napsGovtShare" class="text-teal-900 font-black">₹0</span></strong>
                         </div>
@@ -2992,9 +2907,8 @@ const App = {
     renderStudentProgressTab: function (user) {
         const stages = this.getStudentProgressStages(user);
         return `
-            <div class="space-y-6">
-                <!-- Hiring Status Banner -->
-                <div class="p-6 rounded-2xl border shadow-sm ${user.hiringStatus === 'Hired' ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950' : (user.hiringStatus === 'Rejected' ? 'bg-rose-50/90 border-rose-300 text-rose-950' : 'bg-white/90 border-cyan-200 text-slate-800')}">
+            <div class="space-y-6 w-full">
+                <div class="p-6 rounded-2xl border shadow-sm ${user.hiringStatus === 'Hired' ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950' : (user.hiringStatus === 'Rejected' ? 'bg-rose-50/90 border-rose-300 text-rose-950' : 'bg-white/90 border-cyan-200 text-slate-800')} w-full">
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wide block mb-1">Official Candidate Selection Status</span>
@@ -3017,9 +2931,7 @@ const App = {
                     </div>
                 </div>
 
-                <!-- 3 Stages Detailed Display -->
-                <div class="grid md:grid-cols-3 gap-5">
-                    <!-- Stage 1 -->
+                <div class="grid md:grid-cols-3 gap-5 w-full">
                     <div class="bg-white/90 p-5 rounded-2xl border ${stages.stage1.isPass ? 'border-emerald-200' : 'border-rose-200'} shadow-sm space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[11px] font-bold uppercase text-slate-500">Stage 1</span>
@@ -3032,7 +2944,6 @@ const App = {
                         <p class="text-xs text-slate-600 leading-relaxed">${stages.stage1.details}</p>
                     </div>
 
-                    <!-- Stage 2 -->
                     <div class="bg-white/90 p-5 rounded-2xl border ${stages.stage2.isPass ? 'border-emerald-200' : 'border-rose-200'} shadow-sm space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[11px] font-bold uppercase text-slate-500">Stage 2</span>
@@ -3045,7 +2956,6 @@ const App = {
                         <p class="text-xs text-slate-600 leading-relaxed">${stages.stage2.details}</p>
                     </div>
 
-                    <!-- Stage 3 -->
                     <div class="bg-white/90 p-5 rounded-2xl border border-teal-200 shadow-sm space-y-3">
                         <div class="flex justify-between items-center">
                             <span class="text-[11px] font-bold uppercase text-slate-500">Stage 3</span>
@@ -3080,8 +2990,8 @@ const App = {
         }
 
         return `
-            <div class="space-y-6">
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 flex justify-between items-center card-hover">
+            <div class="space-y-6 w-full">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 flex justify-between items-center card-hover w-full">
                     <div class="flex items-center space-x-4">
                         ${this.getAvatarHtml(user, 'w-12 h-12', 'text-lg', 'border-2 border-slate-400')}
                         <div>
@@ -3095,14 +3005,14 @@ const App = {
                     </button>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <h3 class="text-base font-bold text-slate-800 flex items-center">
                         <i class="fa-solid fa-clipboard-list text-cyan-600 mr-2"></i> My Posted Opportunities
                     </h3>
-                    <div class="space-y-3">
+                    <div class="space-y-3 w-full">
                         ${myInternships.length > 0 || myPlacements.length > 0 ? `
                             ${myInternships.map(i => `
-                                <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover">
+                                <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover w-full">
                                     <div>
                                         <span class="bg-cyan-100 text-cyan-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Internship</span>
                                         <h4 class="font-bold text-slate-900 text-sm mt-1">${i.title}</h4>
@@ -3114,7 +3024,7 @@ const App = {
                                 </div>
                             `).join('')}
                             ${myPlacements.map(p => `
-                                <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover">
+                                <div class="p-4 bg-white/80 rounded-2xl border border-cyan-100 flex flex-wrap justify-between items-center gap-4 card-hover w-full">
                                     <div>
                                         <span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Placement</span>
                                         <h4 class="font-bold text-slate-900 text-sm mt-1">${p.title}</h4>
@@ -3129,7 +3039,7 @@ const App = {
                     </div>
                 </div>
 
-                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4">
+                <div class="glass-card rounded-2xl shadow-sm border border-cyan-200/60 p-6 space-y-4 w-full">
                     <div class="flex flex-wrap justify-between items-center gap-4">
                         <h3 class="text-base font-bold text-slate-800 flex items-center">
                             <i class="fa-solid fa-users text-cyan-600 mr-2"></i> Verified Candidate Pool & Applications
@@ -3144,22 +3054,22 @@ const App = {
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-2 mb-4">
+                    <div class="flex items-center space-x-2 mb-4 w-full">
                         <input type="text" id="aiCandidateSearch" value="${DB.aiSearchQuery}" placeholder="e.g. Find me students with ABC credits in AYUSH who know Pharmacovigilance..." class="w-full px-4 py-2.5 text-sm">
                         <button onclick="App.filterCandidates()" class="bg-blue-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-sm whitespace-nowrap transition">
                             <i class="fa-solid fa-magnifying-glass mr-1"></i> AI Filter
                         </button>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 w-full">
                         ${candidatePool.map(s => {
-            const stages = this.getStudentProgressStages(s);
-            const isPanelOpen = this.openProgressPanels && this.openProgressPanels[s.id];
-            const isHired = s.hiringStatus === 'Hired';
-            const isRejected = s.hiringStatus === 'Rejected';
+                            const stages = this.getStudentProgressStages(s);
+                            const isPanelOpen = this.openProgressPanels && this.openProgressPanels[s.id];
+                            const isHired = s.hiringStatus === 'Hired';
+                            const isRejected = s.hiringStatus === 'Rejected';
 
-            return `
-                                <div class="p-5 bg-white/90 rounded-2xl border ${isHired ? 'border-emerald-300 ring-2 ring-emerald-100' : (isRejected ? 'border-rose-200' : 'border-cyan-100')} space-y-4 card-hover shadow-sm">
+                            return `
+                                <div class="p-5 bg-white/90 rounded-2xl border ${isHired ? 'border-emerald-300 ring-2 ring-emerald-100' : (isRejected ? 'border-rose-200' : 'border-cyan-100')} space-y-4 card-hover shadow-sm w-full">
                                     <div class="flex flex-wrap justify-between items-start gap-4">
                                         <div class="flex items-center space-x-4">
                                             <div class="${DB.isBlindHiring ? 'hidden' : 'block'}">
@@ -3193,18 +3103,15 @@ const App = {
                                         </div>
                                     </div>
 
-                                    <!-- Collapsible Progress Check & Industry Decision Panel -->
-                                    <div id="prog-panel-${s.id}" class="${isPanelOpen ? 'block' : 'hidden'} pt-4 border-t border-cyan-100 space-y-4 animate-fadeIn">
+                                    <div id="prog-panel-${s.id}" class="${isPanelOpen ? 'block' : 'hidden'} pt-4 border-t border-cyan-100 space-y-4 animate-fadeIn w-full">
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center">
                                                 <i class="fa-solid fa-bars-progress text-cyan-600 mr-1.5"></i> 3-Stage Progress Verification Telemetry
                                             </span>
-                                            <span class="text-[11px] text-slate-400 font-mono">APAAR: ${s.apaarId || '8942-7712-4401'}</span>
+                                            <span class="text-[11px] text-slate-400 font-mono">APAAR: ${s.apaarId || '[Aadhaar Omitted]'}</span>
                                         </div>
 
-                                        <!-- 3 Stages Grid -->
-                                        <div class="grid md:grid-cols-3 gap-3">
-                                            <!-- Stage 1 -->
+                                        <div class="grid md:grid-cols-3 gap-3 w-full">
                                             <div class="p-3.5 bg-cyan-50/30 rounded-xl border ${stages.stage1.isPass ? 'border-emerald-200' : 'border-rose-200'} text-xs space-y-1.5">
                                                 <div class="flex justify-between items-center">
                                                     <span class="font-bold text-slate-700">${stages.stage1.title}</span>
@@ -3216,7 +3123,6 @@ const App = {
                                                 <p class="text-[11px] text-slate-500 leading-tight">${stages.stage1.details}</p>
                                             </div>
 
-                                            <!-- Stage 2 -->
                                             <div class="p-3.5 bg-cyan-50/30 rounded-xl border ${stages.stage2.isPass ? 'border-emerald-200' : 'border-rose-200'} text-xs space-y-1.5">
                                                 <div class="flex justify-between items-center">
                                                     <span class="font-bold text-slate-700">${stages.stage2.title}</span>
@@ -3228,7 +3134,6 @@ const App = {
                                                 <p class="text-[11px] text-slate-500 leading-tight">${stages.stage2.details}</p>
                                             </div>
 
-                                            <!-- Stage 3 -->
                                             <div class="p-3.5 bg-cyan-50/30 rounded-xl border border-teal-200 text-xs space-y-1.5">
                                                 <div class="flex justify-between items-center">
                                                     <span class="font-bold text-slate-700">${stages.stage3.title}</span>
@@ -3241,9 +3146,8 @@ const App = {
                                             </div>
                                         </div>
 
-                                        <!-- Industry Hiring & Signing Amount Panel -->
                                         ${!isHired && !isRejected ? `
-                                            <div class="bg-slate-900 text-white p-4 rounded-xl border border-slate-800 space-y-3">
+                                            <div class="bg-slate-900 text-white p-4 rounded-xl border border-slate-800 space-y-3 w-full">
                                                 <div class="flex justify-between items-center">
                                                     <h5 class="text-xs font-bold uppercase tracking-wide text-cyan-400 flex items-center">
                                                         <i class="fa-solid fa-handshake mr-1.5"></i> Industry Hiring Decision (${user.company})
@@ -3266,7 +3170,7 @@ const App = {
                                                 </div>
                                             </div>
                                         ` : (isHired ? `
-                                            <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-emerald-900 gap-2">
+                                            <div class="bg-emerald-50 border border-emerald-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-emerald-900 gap-2 w-full">
                                                 <div>
                                                     <span class="font-extrabold flex items-center gap-1.5 text-emerald-800">
                                                         <i class="fa-solid fa-circle-check text-emerald-600"></i> HIRED BY ${s.hiringCompany || user.company}
@@ -3280,7 +3184,7 @@ const App = {
                                                 </button>
                                             </div>
                                         ` : `
-                                            <div class="bg-rose-50 border border-rose-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-rose-900 gap-2">
+                                            <div class="bg-rose-50 border border-rose-300 p-3.5 rounded-xl flex flex-wrap justify-between items-center text-xs text-rose-900 gap-2 w-full">
                                                 <div>
                                                     <span class="font-extrabold flex items-center gap-1.5 text-rose-800">
                                                         <i class="fa-solid fa-circle-xmark text-rose-600"></i> REJECTED BY ${s.hiringCompany || user.company}
@@ -3295,13 +3199,13 @@ const App = {
                                     </div>
                                 </div>
                             `;
-        }).join('')}
+                        }).join('')}
                         ${candidatePool.length === 0 ? '<p class="text-xs text-slate-500 italic">No candidates match your AI query or they have been removed from your pipeline.</p>' : ''}
                     </div>
                 </div>
             </div>
         `;
-    },
+    }
 };
 
 window.addEventListener('DOMContentLoaded', () => {
