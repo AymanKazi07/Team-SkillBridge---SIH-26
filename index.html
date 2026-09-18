@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="SkillBridge - AI-Powered Academia-Industry Ecosystem for Skill Development, Future Progress, and Career Enhancement aligned with NEP-2020 and AYUSH.">
-    <meta name="keywords" content="Skill Development, Career Enhancement, Future Progress, NEP-2020, APAAR, AICTE, AYUSH, SkillBridge">
-    <meta property="og:title" content="SkillBridge - AI-Powered Academia-Industry Ecosystem">
-    <meta property="og:description" content="Empowering students with AI-driven skill mapping, future readiness, and career advancement.">
-    <meta property="og:image" content="images/career_enhancement.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkillBridge - AI-Powered Academia-Industry & AYUSH NEP-2020 Ecosystem</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,10 +13,10 @@
                 extend: {
                     colors: {
                         gov: {
-                            blue: '#1e40af',
+                            blue: '#0891b2',
                             navy: '#0f172a',
                             saffron: '#d97706',
-                            green: '#047857',
+                            green: '#0d9488',
                             ayush: '#115e59'
                         }
                     }
@@ -28,229 +25,48 @@
         }
     </script>
     <!-- Google Fonts & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Chart.js for Institutional Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- External CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- Global Persistent Background Engine Container -->
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between text-base leading-relaxed">
+
+    <!-- Global Persistent Animated Motion Background Container -->
     <div id="global-background">
+        <div class="animated-gradient-layer"></div>
         <div class="milky-hero-pattern" id="grid-layer"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
+        <div class="orb orb-1" id="orb-1"></div>
+        <div class="orb orb-2" id="orb-2"></div>
+        <div class="orb orb-3" id="orb-3"></div>
+        <div class="orb orb-4" id="orb-4"></div>
+
+        <!-- Subtle Floating Glass Geometric Elements -->
+        <div class="floating-glass-shape shape-1" id="glass-shape-1"></div>
+        <div class="floating-glass-shape shape-2" id="glass-shape-2"></div>
+        <div class="floating-glass-shape shape-3" id="glass-shape-3"></div>
+
         <canvas id="bg-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
     </div>
 
     <!-- Main Dynamic Application Container -->
     <div id="app-content" class="min-h-screen flex flex-col justify-between">
-        <div id="app">
-            <div class="min-h-screen text-slate-800 flex flex-col justify-between">
-                <div class="bg-slate-900/90 backdrop-blur-md text-slate-300 text-xs border-b border-slate-800 py-1.5 px-4 sm:px-8 flex flex-wrap justify-between items-center z-50 relative">
-                    <div class="flex items-center space-x-3">
-                        <span class="inline-block w-3 h-2 badge-tricolor rounded-sm shadow-sm"></span>
-                        <span class="font-medium text-slate-200">Government of India Collaboration Initiative</span>
-                        <span class="hidden md:inline text-slate-600">|</span>
-                        <span class="hidden md:inline text-amber-400 font-medium"><i class="fa-solid fa-leaf mr-1"></i> Ministry of AYUSH & AICTE Aligned</span>
-                    </div>
-                    <div class="flex items-center space-x-4 text-[11px]">
-                        <span class="bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 px-2 py-0.5 rounded font-mono font-semibold">
-                            <i class="fa-solid fa-id-card mr-1"></i> APAAR / ABC Credit Verified
-                        </span>
-                        <span class="text-slate-400">NHEQF 2026 Standards</span>
-                    </div>
-                </div>
-
-                <nav class="border-b border-slate-200/60 bg-white/60 backdrop-blur-md sticky top-0 z-40">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
-                        <div class="flex items-center space-x-3 cursor-pointer" onclick="App.init()">
-                            <div class="w-10 h-10 bg-gradient-to-tr from-blue-700 via-emerald-600 to-amber-500 rounded-xl p-0.5 shadow-md flex items-center justify-center">
-                                <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-                                        <path d="M4 21c4-2 12-2 16 0"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div>
-                                <span class="text-2xl font-bold tracking-tight text-slate-900 font-brand">Skill<span class="text-blue-700">Bridge</span></span>
-                                <span class="block text-[9px] uppercase tracking-widest text-slate-500 font-semibold font-sans">National Academia-Industry Portal • NEP 2020</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <button onclick="App.showLogin('student')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-sm">
-                                <i class="fa-solid fa-user-graduate mr-1.5"></i> Student Portal
-                            </button>
-                            <button onclick="App.showLogin('academician')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white transition shadow-sm">
-                                <i class="fa-solid fa-chalkboard-user mr-1.5"></i> Academician
-                            </button>
-                            <button onclick="App.showLogin('industrialist')" class="text-xs font-semibold px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white transition shadow-sm">
-                                <i class="fa-solid fa-building mr-1.5"></i> Industry
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24 z-10 relative">
-                    <!-- Split Hero Header with Realistic Photography Mosaic -->
-                    <div class="grid lg:grid-cols-12 gap-10 items-center mb-16 text-left">
-                        <div class="lg:col-span-7 space-y-6">
-                            <div class="inline-flex items-center space-x-2 glass-card border border-slate-200/85 shadow-sm rounded-full px-4 py-1.5 text-xs text-blue-900 font-medium">
-                                <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-                                <span>APAAR & NCVET Compliant National Framework</span>
-                            </div>
-
-                            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-slate-900">
-                                Unified Skill Validation & <br>
-                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-emerald-600">
-                                    Academic Gap Intelligence Platform
-                                </span>
-                            </h1>
-                            
-                            <p class="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-2xl">
-                                Connecting Students, Enterprises, and Educational Institutions with real-time AI skill mapping, NPTEL/AYUSH credit transfer, and official qualification records.
-                            </p>
-
-                            <div class="flex flex-wrap gap-4 pt-2">
-                                <button onclick="App.showLogin('student')" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-lg transition flex items-center">
-                                    Access Student Portal <i class="fa-solid fa-arrow-right ml-2"></i>
-                                </button>
-                                <button onclick="App.showLogin('industrialist')" class="px-6 py-3 glass-card hover:bg-white text-slate-800 border border-slate-300 font-semibold text-sm rounded-xl shadow-sm transition">
-                                    Enterprise Recruiting Portal
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Realistic Photography Gallery Mosaic -->
-                        <div class="lg:col-span-5 grid grid-cols-2 gap-3.5 relative">
-                            <div class="img-card-container h-48 col-span-2 relative group">
-                                <img src="images/career_enhancement.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.career" alt="Career Enhancement" class="w-full h-full object-cover img-zoom">
-                                <div class="absolute inset-0 img-overlay-gradient flex items-end p-4">
-                                    <span class="text-white text-xs font-bold flex items-center"><i class="fa-solid fa-chart-line text-amber-400 mr-2 text-sm"></i> Real-World Career Enhancement & Enterprise Hiring</span>
-                                </div>
-                            </div>
-                            <div class="img-card-container h-36 relative group">
-                                <img src="images/skill_development.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.skill" alt="Skill Development" class="w-full h-full object-cover img-zoom">
-                                <div class="absolute inset-0 img-overlay-gradient flex items-end p-3">
-                                    <span class="text-white text-[11px] font-bold"><i class="fa-solid fa-laptop-code text-blue-400 mr-1.5"></i> Practical Skill Labs</span>
-                                </div>
-                            </div>
-                            <div class="img-card-container h-36 relative group">
-                                <img src="images/future_progress.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.future" alt="Future Progress" class="w-full h-full object-cover img-zoom">
-                                <div class="absolute inset-0 img-overlay-gradient flex items-end p-3">
-                                    <span class="text-white text-[11px] font-bold"><i class="fa-solid fa-microchip text-emerald-400 mr-1.5"></i> Future Innovation</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Feature Image Showcase Section -->
-                    <div class="mt-8 mb-20 max-w-6xl mx-auto text-left">
-                        <div class="text-center mb-10">
-                            <span class="text-xs font-bold uppercase tracking-widest text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 inline-block mb-2">Pillars of Growth</span>
-                            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Empowering Every Step of Your Academic & Professional Journey</h2>
-                            <p class="text-slate-600 text-sm max-w-2xl mx-auto mt-2">Explore how SkillBridge integrates skill acquisition, future technological readiness, and direct career placement into one unified ecosystem.</p>
-                        </div>
-
-                        <div class="grid md:grid-cols-3 gap-8">
-                            <!-- Skill Development Card -->
-                            <div class="glass-card border border-slate-200/90 rounded-2xl overflow-hidden shadow-lg card-hover flex flex-col justify-between group">
-                                <div>
-                                    <div class="img-card-container h-48 w-full relative">
-                                        <img src="images/skill_development.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.skill" alt="Skill Development" class="w-full h-full object-cover img-zoom">
-                                        <div class="absolute inset-0 img-overlay-gradient flex flex-col justify-between p-4">
-                                            <span class="self-start img-badge bg-amber-950/70 text-amber-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                                <i class="fa-solid fa-code mr-1"></i> Skill Development
-                                            </span>
-                                            <span class="text-white text-xs font-medium opacity-90"><i class="fa-solid fa-certificate text-amber-400 mr-1"></i> Micro-Credentials & Hands-on Labs</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Interactive Skill Acquisition</h3>
-                                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                            Access hands-on coding environments, clinical laboratory simulations, and NPTEL credit transfers aligned with NEP-2020 standards.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="px-6 pb-6">
-                                    <button onclick="App.showLogin('student')" class="w-full py-2 bg-slate-900 hover:bg-blue-600 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center">
-                                        Explore Skills <i class="fa-solid fa-arrow-right ml-1.5 text-[10px]"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Future Progress Card -->
-                            <div class="glass-card border border-slate-200/90 rounded-2xl overflow-hidden shadow-lg card-hover flex flex-col justify-between group">
-                                <div>
-                                    <div class="img-card-container h-48 w-full relative">
-                                        <img src="images/future_progress.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.future" alt="Future Progress" class="w-full h-full object-cover img-zoom">
-                                        <div class="absolute inset-0 img-overlay-gradient flex flex-col justify-between p-4">
-                                            <span class="self-start img-badge bg-teal-950/70 text-teal-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                                <i class="fa-solid fa-chart-line mr-1"></i> Future Progress
-                                            </span>
-                                            <span class="text-white text-xs font-medium opacity-90"><i class="fa-solid fa-brain text-teal-400 mr-1"></i> AI Gap Intelligence & Roadmaps</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Predictive AI Curriculum Audits</h3>
-                                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                            Discover real-time industry demand gaps with AI syllabus matching and continuous NHEQF qualification progress tracking.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="px-6 pb-6">
-                                    <button onclick="App.showLogin('academician')" class="w-full py-2 bg-slate-900 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center">
-                                        Audit Curriculum <i class="fa-solid fa-arrow-right ml-1.5 text-[10px]"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Career Enhancement Card -->
-                            <div class="glass-card border border-slate-200/90 rounded-2xl overflow-hidden shadow-lg card-hover flex flex-col justify-between group">
-                                <div>
-                                    <div class="img-card-container h-48 w-full relative">
-                                        <img src="images/career_enhancement.jpg" onerror="if(typeof IMAGE_DATA!=='undefined') this.src=IMAGE_DATA.career" alt="Career Enhancement" class="w-full h-full object-cover img-zoom">
-                                        <div class="absolute inset-0 img-overlay-gradient flex flex-col justify-between p-4">
-                                            <span class="self-start img-badge bg-indigo-950/70 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                                                <i class="fa-solid fa-briefcase mr-1"></i> Career Enhancement
-                                            </span>
-                                            <span class="text-white text-xs font-medium opacity-90"><i class="fa-solid fa-rocket text-indigo-400 mr-1"></i> NAPS 2.0 Stipends & Enterprise Hires</span>
-                                        </div>
-                                    </div>
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition">Direct Industry Placement</h3>
-                                        <p class="text-slate-600 text-xs leading-relaxed mb-4">
-                                            Accelerate career trajectories with blind-hiring evaluation filters, verified APAAR credit portfolios, and paid corporate internships.
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="px-6 pb-6">
-                                    <button onclick="App.showLogin('industrialist')" class="w-full py-2 bg-slate-900 hover:bg-amber-600 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center">
-                                        View Recruitments <i class="fa-solid fa-arrow-right ml-1.5 text-[10px]"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="app"></div>
     </div>
 
     <!-- Toast Notification Container -->
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
     <!-- External JavaScript Data & Logic -->
-    <script src="images_data.js"></script>
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
