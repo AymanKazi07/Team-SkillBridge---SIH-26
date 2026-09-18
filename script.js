@@ -121,6 +121,7 @@ const DB = {
     seed: function () {
         if (this.users.length === 0) {
             this.users = [
+                // 1. Existing General Student
                 {
                     id: 1, name: 'Aaditya Sharma', email: 'student@demo.com', password: 'demo123',
                     role: 'student', apaarId: '8942-7712-4401', apaarVerified: true, domain: 'ayush',
@@ -146,18 +147,89 @@ const DB = {
                         ]
                     }
                 },
-                { id: 2, name: 'Prof. (Dr.) V. K. Joshi', email: 'academic@demo.com', password: 'demo123', role: 'academician', institution: 'National Institute of Ayurveda / All India Council', domain: 'ayush', profilePhoto: null, skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'], courses: [1, 2] },
-                { id: 3, name: 'Himalaya & Dabur Health R&D', email: 'industry@demo.com', password: 'demo123', role: 'industrialist', company: 'Dabur India R&D Labs', domain: 'ayush', profilePhoto: null, skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling'] }
+                // 2. Engineering Student Demo
+                {
+                    id: 4, name: 'Rohan Verma', email: 'engineering@demo.com', password: 'demo123',
+                    role: 'student', apaarId: '7821-4439-9012', apaarVerified: true, domain: 'engineering',
+                    subDomain: 'Software Systems & Cloud Architecture', targetRole: 'Senior Cloud & AI Systems Engineer',
+                    matchScore: 92, skills: ['React', 'TypeScript', 'Microservices', 'Python', 'Vector DBs', 'Cloud Architecture'],
+                    projects: ['Distributed Health Telemetry Pipeline', 'Real-time RAG Search Engine'],
+                    researchPapers: ['Scalable Microservice Consensus in Modern Distributed Telemetry (DOI: 10.1109/IEEE.2025.01)'],
+                    github: 'https://github.com/aaditya-eng-systems', linkedin: 'https://linkedin.com/in/aaditya-eng',
+                    profilePhoto: null, level: 'Advanced', abcCredits: 32, rejections: [], testHistory: {},
+                    assessment: {
+                        score: 94, level: 'Advanced (NHEQF Level 7)',
+                        repoAudit: 'Verified Git Repo: Clean modular layout, active commit history, unit tests detected.',
+                        researchWeight: 'High (Indexed in IEEE Xplore / Scopus)',
+                        gaps: ['Distributed Consensus (Raft/Paxos)', 'Vector DB indexing (HNSW)', 'CI/CD pipeline hardening'],
+                        suggestions: [
+                            'Enroll in ENGINEERING NEP-accredited Capstone certification',
+                            'Publish an open-source technical whitepaper or repository demonstrating end-to-end implementation',
+                            'Link APAAR ID to Academic Bank of Credits (ABC) to transfer course completion points'
+                        ],
+                        roadmap: [
+                            { phase: 'Phase 1 (Month 1-2)', title: 'Core Competency & System Mastery', desc: 'Deep dive into data structures, scalable API design, and modular repository patterns.' },
+                            { phase: 'Phase 2 (Month 3-4)', title: 'Cloud-Native & Distributed AI', desc: 'Deploy cloud microservices, vector similarity search, and automated test pipelines.' },
+                            { phase: 'Phase 3 (Month 5-6)', title: 'Production Capstone & Industry Placement', desc: 'Complete enterprise-grade projects with telemetry, monitoring, and live deployments.' }
+                        ]
+                    }
+                },
+                // 3. Medical Student Demo
+                {
+                    id: 5, name: 'Dr. Priya Nair', email: 'medical@demo.com', password: 'demo123',
+                    role: 'student', apaarId: '6510-8823-1194', apaarVerified: true, domain: 'ayush',
+                    subDomain: 'Ayurvedic Pharmacognosy & Clinical Pharmacology', targetRole: 'Senior Clinical AYUSH Researcher',
+                    matchScore: 88, skills: ['Herb Standardization', 'Clinical Trial Protocols', 'Phytochemistry', 'Clinical Pharmacovigilance', 'Reverse Pharmacology'],
+                    projects: ['Ayurvedic Herbal Compound Quality Database', 'Automated Prakriti Assessment AI'],
+                    researchPapers: ['Chromatographic Fingerprinting & Pharmacovigilance of Polyherbal Formulations (DOI: 10.1016/ayush.2025.09)'],
+                    github: '', linkedin: 'https://linkedin.com/in/priya-ayush-med',
+                    profilePhoto: null, level: 'Advanced', abcCredits: 30, rejections: [], testHistory: {},
+                    assessment: {
+                        score: 90, level: 'Advanced (NHEQF Level 7)',
+                        repoAudit: 'Domain Evaluation Completed: Academic portfolio & empirical publications verified.',
+                        researchWeight: 'High (Indexed in Scopus / UGC-CARE AYUSH Category)',
+                        gaps: ['Ayush GCP Regulatory Compliance', 'Bioinformatics docking tools', 'WHO-GACP Protocols'],
+                        suggestions: [
+                            'Complete ICMR/AYUSH Good Clinical Practice (GCP) Module',
+                            'Undertake molecular docking workflows for active phyto-compounds',
+                            'Enroll in AYUSH NEP-accredited Capstone certification'
+                        ],
+                        roadmap: [
+                            { phase: 'Phase 1 (Month 1-2)', title: 'Foundations & Pharmacopoeial Standards', desc: 'Study Ayurvedic Pharmacopoeia of India (API), PLIM monographs, and raw material validation.' },
+                            { phase: 'Phase 2 (Month 3-4)', title: 'Bio-Analytical & Clinical Protocols', desc: 'Master HPLC/HPTLC fingerprinting, AYUSH GCP, and adverse drug reaction (ADR) reporting and pharmacovigilance protocols.' },
+                            { phase: 'Phase 3 (Month 5-6)', title: 'Industry Integration & Clinical Trials', desc: 'Undertake real-time clinical data compilation, stability testing, and Ministry compliance audits.' }
+                        ]
+                    }
+                },
+                // 4. Academician - Medical (AYUSH)
+                { id: 2, name: 'Prof. (Dr.) V. K. Joshi', email: 'academic.med@demo.com', password: 'demo123', role: 'academician', institution: 'National Institute of Ayurveda / All India Council', domain: 'ayush', profilePhoto: null, skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'], courses: [1] },
+                { id: 8, name: 'Prof. (Dr.) V. K. Joshi', email: 'academic@demo.com', password: 'demo123', role: 'academician', institution: 'National Institute of Ayurveda / All India Council', domain: 'ayush', profilePhoto: null, skills: ['Dravyaguna', 'Integrative Medicine', 'NEP 2020 Curriculum'], courses: [1] },
+
+                // 5. Academician - Engineering
+                { id: 6, name: 'Prof. (Dr.) Rajesh Sharma', email: 'academic.eng@demo.com', password: 'demo123', role: 'academician', institution: 'IIT Delhi / AICTE Technology Cell', domain: 'engineering', profilePhoto: null, skills: ['Distributed Systems', 'Cloud Architecture', 'NEP 2020 Curriculum', 'Edge AI'], courses: [2] },
+
+                // 6. Industry - Medical (AYUSH)
+                { id: 3, name: 'Himalaya & Dabur Health R&D', email: 'industry.med@demo.com', password: 'demo123', role: 'industrialist', company: 'Dabur India R&D Labs', domain: 'ayush', profilePhoto: null, skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling'] },
+                { id: 9, name: 'Himalaya & Dabur Health R&D', email: 'industry@demo.com', password: 'demo123', role: 'industrialist', company: 'Dabur India R&D Labs', domain: 'ayush', profilePhoto: null, skills: ['Phytomedicine R&D', 'Quality Assurance', 'HLPC Profiling'] },
+
+                // 7. Industry - Engineering
+                { id: 7, name: 'Google Cloud & TechCorp Labs', email: 'industry.eng@demo.com', password: 'demo123', role: 'industrialist', company: 'Google Cloud & TechCorp Labs', domain: 'engineering', profilePhoto: null, skills: ['Cloud Architecture', 'Microservices', 'Distributed AI', 'DevOps'] }
             ];
 
             this.courses = [
                 { id: 1, title: 'Pharmacovigilance & Quality Control in AYUSH Drugs', author: 'Prof. (Dr.) V. K. Joshi', domain: 'ayush', level: 'Advanced', nepCredits: 4, deadline: '2026-09-30', description: 'Comprehensive analysis of Ayurvedic formulations, TLC/HPLC methods, and WHO Good Agricultural and Collection Practices (GACP).', quiz: [{ q: 'Which statutory body regulates ASU (Ayurveda, Siddha, Unani) drugs quality in India?', options: ['Pharmacopoeia Commission for Indian Medicine (PCIM&H)', 'TRAI', 'SEBI'], answer: 0 }, { q: 'What is the minimum marker content requirement for high-potency Curcumin extracts in standard AYUSH guidelines?', options: ['95%', '40%', '10%'], answer: 0 }], certified: true },
-                { id: 2, title: 'Edge AI & Cloud Telemedicine Architecture', author: 'Dr. M. S. Swaminathan Tech Cell', domain: 'engineering', level: 'Intermediate', nepCredits: 3, deadline: '2026-10-15', description: 'Design distributed architectures for remote health monitoring, IoT sensor integration, and microservices.', quiz: [{ q: 'Which protocol is most optimal for constrained bandwidth IoT vitals sensors?', options: ['MQTT', 'HTTP/1.1 Polling', 'SOAP XML'], answer: 0 }], certified: true }
+                { id: 2, title: 'Edge AI & Cloud Telemedicine Architecture', author: 'Prof. (Dr.) Rajesh Sharma', domain: 'engineering', level: 'Intermediate', nepCredits: 3, deadline: '2026-10-15', description: 'Design distributed architectures for remote health monitoring, IoT sensor integration, and microservices.', quiz: [{ q: 'Which protocol is most optimal for constrained bandwidth IoT vitals sensors?', options: ['MQTT', 'HTTP/1.1 Polling', 'SOAP XML'], answer: 0 }], certified: true }
             ];
 
-            this.internships = [{ id: 1, company: 'Dabur India R&D Labs', title: 'Ayush Phytopharmacy & Formulation Intern', domain: 'ayush', skills: ['Herb Standardization', 'HPLC/GC-MS', 'AYUSH GCP'], duration: '6 Months', stipend: '₹30,000 / month', deadline: '2026-09-20', nepApproved: true, postedBy: 3, location: 'New Delhi / Hybrid', description: 'Work directly with chief formulators on standardizing herbal extracts using HPTLC and spectrophotometry. Direct mentorship under senior scientists.', requirements: ['B.Pharm / M.Pharm or relevant AYUSH background', 'Familiarity with pharmacopoeial standards', 'Analytical mindset'] }];
+            this.internships = [
+                { id: 1, company: 'Dabur India R&D Labs', title: 'Ayush Phytopharmacy & Formulation Intern', domain: 'ayush', skills: ['Herb Standardization', 'HPLC/GC-MS', 'AYUSH GCP'], duration: '6 Months', stipend: '₹30,000 / month', deadline: '2026-09-20', nepApproved: true, postedBy: 3, location: 'New Delhi / Hybrid', description: 'Work directly with chief formulators on standardizing herbal extracts using HPTLC and spectrophotometry. Direct mentorship under senior scientists.', requirements: ['B.Pharm / M.Pharm or relevant AYUSH background', 'Familiarity with pharmacopoeial standards', 'Analytical mindset'] },
+                { id: 2, company: 'Google Cloud & TechCorp Labs', title: 'Cloud Native Systems & AI Intern', domain: 'engineering', skills: ['Microservices', 'Cloud Architecture', 'Python', 'React'], duration: '6 Months', stipend: '₹45,000 / month', deadline: '2026-10-01', nepApproved: true, postedBy: 7, location: 'Bengaluru / Hybrid', description: 'Work with cloud architecture teams developing scalable microservices and telemetry monitoring pipelines.', requirements: ['B.Tech / M.Tech in CS/IT or allied branch', 'Familiarity with containerization and cloud platforms', 'Strong algorithmic problem-solving'] }
+            ];
 
-            this.placements = [{ id: 1, company: 'Patanjali & Himalaya Health Sciences', title: 'Senior AYUSH Regulatory & Research Associate', domain: 'ayush', skills: ['Pharmacovigilance', 'Standardization', 'Clinical Trials'], salary: '₹14.5 LPA', location: 'Haridwar / New Delhi', postedBy: 3, description: 'Lead compliance audits and clinical trial documentation for export-ready botanical formulations.', requirements: ['Post-graduate degree in AYUSH or clinical research', 'Minimum 1 year research or internship experience', 'Knowledge of Clinical Pharmacovigilance reporting'] }];
+            this.placements = [
+                { id: 1, company: 'Patanjali & Himalaya Health Sciences', title: 'Senior AYUSH Regulatory & Research Associate', domain: 'ayush', skills: ['Pharmacovigilance', 'Standardization', 'Clinical Trials'], salary: '₹14.5 LPA', location: 'Haridwar / New Delhi', postedBy: 3, description: 'Lead compliance audits and clinical trial documentation for export-ready botanical formulations.', requirements: ['Post-graduate degree in AYUSH or clinical research', 'Minimum 1 year research or internship experience', 'Knowledge of Clinical Pharmacovigilance reporting'] },
+                { id: 2, company: 'Google Cloud & TechCorp Labs', title: 'Senior Cloud & Distributed Systems Engineer', domain: 'engineering', skills: ['Cloud Architecture', 'Microservices', 'Vector DBs', 'CI/CD'], salary: '₹28.5 LPA', location: 'Bengaluru / Hyderabad', postedBy: 7, description: 'Design and implement resilient distributed systems, real-time telemetry, and microservices.', requirements: ['Degree in Computer Science or related discipline', 'Hands-on experience in cloud infrastructure', 'Proven project and system design proficiency'] }
+            ];
         }
     }
 };
@@ -611,19 +683,216 @@ const App = {
                                 </button>
                             </div>
                         </div>
+
+                        <!-- EXPLORE THE ECOSYSTEM FLOW INDICATOR -->
+                        <div class="flex flex-col items-center mb-10">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-800 mb-2">Explore the Ecosystem Flow</span>
+                            <div class="w-5 h-8 rounded-full border-2 border-cyan-400/80 flex justify-center pt-1 shadow-sm">
+                                <div class="w-1 h-2 bg-cyan-600 rounded-full animate-bounce"></div>
+                            </div>
+                        </div>
+
+                        <!-- THE SKILLBRIDGE ECOSYSTEM CONTAINER -->
+                        <div class="bg-white rounded-3xl border border-cyan-200/70 p-8 sm:p-10 shadow-xl max-w-5xl mx-auto mb-20 text-center relative z-10">
+                            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">The SkillBridge Ecosystem</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 max-w-2xl mx-auto mb-8 leading-relaxed">
+                                A seamless flow connecting validated student competencies with academic accreditation and active industry demands.
+                            </p>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <!-- Card 1: Student Profile -->
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                    <div>
+                                        <div class="w-9 h-9 rounded-xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-cyan-600 mb-3 text-sm">
+                                            <i class="fa-solid fa-id-badge"></i>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">1. Student Profile</h4>
+                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>APAAR / ABC Integration</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>AI Skill-Gap Analysis</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-cyan-600 mr-2 text-[10px]"></i>Technical Code Telemetry</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: Academic Alignment -->
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                    <div>
+                                        <div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-600 mb-3 text-sm">
+                                            <i class="fa-solid fa-book-bookmark"></i>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">2. Academic Alignment</h4>
+                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>NEP-2020 Course Credits</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>Certified Faculty Modules</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-teal-600 mr-2 text-[10px]"></i>AI Syllabus Auditor</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Card 3: Industry Intelligence -->
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                    <div>
+                                        <div class="w-9 h-9 rounded-xl bg-slate-100 border border-slate-300 flex items-center justify-center text-slate-700 mb-3 text-sm">
+                                            <i class="fa-solid fa-building-columns"></i>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">3. Industry Intelligence</h4>
+                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Active Recruiter Demands</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Unbiased Blind Hiring</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-slate-700 mr-2 text-[10px]"></i>Institutional Feedback</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <!-- Card 4: Verified Placements -->
+                                <div class="bg-cyan-50/20 hover:bg-cyan-50/50 border border-cyan-100/90 rounded-2xl p-4 text-left transition card-hover flex flex-col justify-between">
+                                    <div>
+                                        <div class="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 mb-3 text-sm">
+                                            <i class="fa-solid fa-briefcase"></i>
+                                        </div>
+                                        <h4 class="font-bold text-slate-900 text-sm mb-2.5">4. Verified Placements</h4>
+                                        <ul class="text-[11px] space-y-1.5 text-slate-600 font-medium">
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>AI Matched Opportunities</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>NAPS 2.0 Internships</li>
+                                            <li class="flex items-center"><i class="fa-solid fa-check text-sky-600 mr-2 text-[10px]"></i>1-Click APAAR Apply</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FREQUENTLY ASKED QUESTIONS SECTION -->
+                        <div class="max-w-4xl mx-auto mb-10 text-center">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-800 block mb-1">Clear Answers to Real User Questions</span>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-2">Frequently Asked Questions</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto mb-8 leading-relaxed">
+                                Everything you need to know about APAAR credit transfers, AI gap audits, and industry recruiting.
+                            </p>
+
+                            <div class="space-y-3 text-left">
+                                <!-- FAQ 1 -->
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                    <button type="button" onclick="App.toggleFaq(1)" class="w-full flex justify-between items-center text-left focus:outline-none">
+                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                            How are my course completion points transferred to my official APAAR / ABC Passport?
+                                        </span>
+                                        <i id="faq-icon-1" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
+                                    </button>
+                                    <div id="faq-ans-1" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                        When you pass an accredited curriculum quiz or 20-question competency examination with a score &ge; 60%, the academic credits (e.g., 3 to 4 NEP credits) are verified and transferred to your National Academic Bank of Credits (ABC) repository linked with your 12-digit APAAR ID.
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 2 -->
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                    <button type="button" onclick="App.toggleFaq(2)" class="w-full flex justify-between items-center text-left focus:outline-none">
+                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                            How does Unbiased (Blind) Hiring ensure fair evaluation for candidates?
+                                        </span>
+                                        <i id="faq-icon-2" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
+                                    </button>
+                                    <div id="faq-ans-2" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                        When recruiters toggle Unbiased (Blind) Hiring mode, candidate personal identifiers (name and avatar photo) are automatically masked. Recruiters review applications purely based on verified skills, assessment scores, GitHub code telemetry, and APAAR credential records.
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 3 -->
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                    <button type="button" onclick="App.toggleFaq(3)" class="w-full flex justify-between items-center text-left focus:outline-none">
+                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                            How does the AI Syllabus Auditor help faculty keep curriculums updated?
+                                        </span>
+                                        <i id="faq-icon-3" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
+                                    </button>
+                                    <div id="faq-ans-3" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                        The AI Syllabus Auditor scans submitted syllabus text against real-time industry recruiter demands across Engineering, AYUSH, Management, and Law. It identifies curriculum deficits and recommends credit-bearing modules (e.g., Spring Boot, Pharmacovigilance) to bridge institutional gaps immediately.
+                                    </div>
+                                </div>
+
+                                <!-- FAQ 4 -->
+                                <div class="bg-white/90 hover:bg-white border border-cyan-100/90 rounded-2xl p-4 shadow-sm transition">
+                                    <button type="button" onclick="App.toggleFaq(4)" class="w-full flex justify-between items-center text-left focus:outline-none">
+                                        <span class="text-xs sm:text-sm font-bold text-slate-800 flex items-center">
+                                            <i class="fa-regular fa-circle-question text-cyan-600 mr-2.5 text-base"></i>
+                                            What happens if a recruiter rejects my application due to a missing skill?
+                                        </span>
+                                        <i id="faq-icon-4" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ml-2"></i>
+                                    </button>
+                                    <div id="faq-ans-4" class="hidden pt-3 mt-2 border-t border-cyan-100/70 text-xs text-slate-600 leading-relaxed">
+                                        Whenever a recruiter rejects an application specifying a missing skill, the candidate is routed an AI-generated recovery roadmap with accredited NPTEL/SWAYAM coursework to acquire that skill. Concurrently, an alert is dispatched to the candidate's affiliated institution to address the trend.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         `;
     },
 
+    toggleFaq: function (idx) {
+        const ans = document.getElementById('faq-ans-' + idx);
+        const icon = document.getElementById('faq-icon-' + idx);
+        if (ans) {
+            const isHidden = ans.classList.contains('hidden');
+            ans.classList.toggle('hidden');
+            if (icon) {
+                icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+            }
+        }
+    },
     showLogin: function (role) {
         const app = document.getElementById('app');
         const roleConfig = {
-            student: { title: 'Student & Researcher Login', icon: 'fa-user-graduate', color: 'cyan', demo: 'student@demo.com' },
-            academician: { title: 'Academician & Faculty Portal', icon: 'fa-chalkboard-user', color: 'teal', demo: 'academic@demo.com' },
-            industrialist: { title: 'Industry & Recruiter Gateway', icon: 'fa-building', color: 'slate', demo: 'industry@demo.com' }
+            student: { title: 'Student & Researcher Login', icon: 'fa-user-graduate', color: 'cyan' },
+            academician: { title: 'Academician & Faculty Portal', icon: 'fa-chalkboard-user', color: 'teal' },
+            industrialist: { title: 'Industry & Recruiter Gateway', icon: 'fa-building', color: 'slate' }
         }[role];
+
+        let demoButtonsHtml = '';
+        if (role === 'student') {
+            demoButtonsHtml = `
+                <div class="flex justify-between items-center">
+                    <span><strong>Student Demo (General):</strong> student@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='student@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-cyan-700 underline font-semibold">Auto-fill</button>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-cyan-100/60">
+                    <span><strong>Engineering Demo:</strong> engineering@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='engineering@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-cyan-700 underline font-semibold">Auto-fill</button>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-cyan-100/60">
+                    <span><strong>Medical Demo:</strong> medical@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='medical@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-cyan-700 underline font-semibold">Auto-fill</button>
+                </div>
+            `;
+        } else if (role === 'academician') {
+            demoButtonsHtml = `
+                <div class="flex justify-between items-center">
+                    <span><strong>Engineering Faculty:</strong> academic.eng@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='academic.eng@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-teal-700 underline font-semibold">Auto-fill</button>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-cyan-100/60">
+                    <span><strong>Medical Faculty:</strong> academic.med@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='academic.med@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-teal-700 underline font-semibold">Auto-fill</button>
+                </div>
+            `;
+        } else if (role === 'industrialist') {
+            demoButtonsHtml = `
+                <div class="flex justify-between items-center">
+                    <span><strong>Engineering Recruiter:</strong> industry.eng@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='industry.eng@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-slate-800 underline font-semibold">Auto-fill</button>
+                </div>
+                <div class="flex justify-between items-center pt-1 border-t border-cyan-100/60">
+                    <span><strong>Medical Recruiter:</strong> industry.med@demo.com</span>
+                    <button type="button" onclick="document.getElementById('loginEmail').value='industry.med@demo.com'; document.getElementById('loginPassword').value='demo123';" class="text-slate-800 underline font-semibold">Auto-fill</button>
+                </div>
+            `;
+        }
 
         app.innerHTML = `
             <div class="min-h-screen flex flex-col justify-center items-center p-4 relative framer-reveal">
@@ -650,9 +919,8 @@ const App = {
                             Authenticate & Enter Portal
                         </button>
                     </form>
-                    <div class="mt-4 p-3 bg-cyan-50/60 rounded-xl border border-cyan-100 text-xs text-slate-600 flex justify-between items-center">
-                        <span><strong>Demo Access:</strong> ${roleConfig.demo}</span>
-                        <button onclick="document.getElementById('loginEmail').value='${roleConfig.demo}'; document.getElementById('loginPassword').value='demo123';" class="text-cyan-700 underline font-semibold">Auto-fill</button>
+                    <div class="mt-4 p-3 bg-cyan-50/60 rounded-xl border border-cyan-100 text-xs text-slate-600 space-y-2">
+                        ${demoButtonsHtml}
                     </div>
                     <div class="mt-6 flex justify-start text-xs text-slate-500">
                         <button onclick="App.showRegister('${role}')" class="text-cyan-700 font-semibold hover:underline">New here? Register</button>
@@ -700,7 +968,7 @@ const App = {
         const email = document.getElementById('loginEmail').value.trim();
         const password = document.getElementById('loginPassword').value;
 
-        // 1. Check local seed users first (instant for student@demo.com, academic@demo.com, industry@demo.com)
+        // 1. Check local seed users first (instant for student@demo.com, engineering@demo.com, medical@demo.com, academic@demo.com, industry@demo.com)
         let user = DB.users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password && u.role === role);
 
         // 2. If not found in local memory, check PostgreSQL via server.py
@@ -1736,7 +2004,7 @@ const App = {
                             <span>SIH-2026 Coral AI Resume Engine Active</span>
                         </div>
                         <h2 class="text-2xl font-bold tracking-tight">Smart Resume & AI Optimization Hub</h2>
-                        <p class="text-xs text-slate-300 max-w-xl mt-1">
+                        <p class="text-xs text-slate-300 max-xl mt-1">
                             Upload your existing resume to run instant ATS scoring, AI-suggested bullet improvements, and automatic structural formatting.
                         </p>
                     </div>
